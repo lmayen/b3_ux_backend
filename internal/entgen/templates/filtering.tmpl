@@ -1,0 +1,207 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "filteringHelpers" }}
+
+{{ template "header" $ }}
+
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+
+	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
+	"github.com/olekukonko/errors"
+
+	"{{ $.Config.Package }}/predicate"
+	{{ range $node := $.Nodes }}
+	{{ $node.Package }} "{{ $.Config.Package }}/{{ $node.PackageDir }}"
+	{{ end }}
+)
+
+type FilterOperator string
+
+const (
+	EqFilterOperator    FilterOperator = "eq"
+	NeFilterOperator    FilterOperator = "ne"
+	LtFilterOperator    FilterOperator = "lt"
+	LteFilterOperator   FilterOperator = "lte"
+	GtFilterOperator    FilterOperator = "gt"
+	GteFilterOperator   FilterOperator = "gte"
+	InFilterOperator    FilterOperator = "in"
+	NotInFilterOperator FilterOperator = "notin"
+)
+
+type FilterItem struct {
+	Field    string          `json:"field"`
+	Operator FilterOperator  `json:"operator"`
+	Value    json.RawMessage `json:"value"`
+}
+
+func decodeFilterValue[T any](raw json.RawMessage) (T, error) {
+	var value T
+	err := json.Unmarshal(raw, &value)
+	return value, err
+}
+
+type FilterPredicate func(*sql.Selector)
+
+{{ range $node := $.Nodes }}
+func (q *{{ $node.QueryName }}) ApplyFilterOptions(filters []FilterItem) error {
+    for _, filter := range filters {
+        p, err := buildFilterPredicate("{{ $node.Name }}", strings.Split(filter.Field, "."), filter.Operator, filter.Value)
+        if err != nil {
+            return errors.Wrapf(err, "could not build filter predicate for entity {{ $node.Name }}")
+        }
+        q.Where(predicate.{{ $node.Name }}(p))
+    }
+    return nil
+}
+
+func build{{ $node.Name }}FilterPredicate(path []string, operator FilterOperator, raw json.RawMessage) (FilterPredicate, error) {
+    if len(path) == 1 {
+        switch path[0] {
+        {{ if $node.ID }}
+        case "id":
+            switch operator {
+                case EqFilterOperator:
+                    value, err := decodeFilterValue[uuid.UUID](raw)
+                    if err != nil {
+                        return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                    }
+
+                    return FilterPredicate({{ $node.Package  }}.IDEQ(value)), nil
+
+                case NeFilterOperator:
+                    value, err := decodeFilterValue[uuid.UUID](raw)
+                    if err != nil {
+                        return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                    }
+
+                    return FilterPredicate({{ $node.Package  }}.IDNEQ(value)), nil
+
+               case InFilterOperator:
+                   value, err := decodeFilterValue[[]uuid.UUID](raw)
+                   if err != nil {
+                       return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                   }
+
+                   return FilterPredicate({{ $node.Package  }}.IDIn(value...)), nil
+
+               case NotInFilterOperator:
+                   value, err := decodeFilterValue[[]uuid.UUID](raw)
+                   if err != nil {
+                       return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                   }
+
+                   return FilterPredicate({{ $node.Package  }}.IDNotIn(value...)), nil
+}
+        {{ end}}
+
+        {{ range $field := $node.Fields }}
+        case "{{ $field.Name }}":
+            switch operator {
+            case EqFilterOperator:
+                value, err := decodeFilterValue[{{ $field.Type }}](raw)
+                if err != nil {
+                    return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                }
+
+                return FilterPredicate({{ $node.Package  }}.{{ $field.StructField }}EQ(value)), nil
+
+            case NeFilterOperator:
+                value, err := decodeFilterValue[{{ $field.Type }}](raw)
+                if err != nil {
+                    return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                }
+
+                return FilterPredicate({{ $node.Package  }}.{{ $field.StructField }}NEQ(value)), nil
+
+            {{ if not $field.IsBool }}
+            case InFilterOperator:
+                value, err := decodeFilterValue[[]{{ $field.Type }}](raw)
+                if err != nil {
+                    return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                }
+
+                return FilterPredicate({{ $node.Package  }}.{{ $field.StructField }}In(value...)), nil
+
+            case NotInFilterOperator:
+                value, err := decodeFilterValue[[]{{ $field.Type }}](raw)
+                if err != nil {
+                    return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                }
+
+                return FilterPredicate({{ $node.Package  }}.{{ $field.StructField }}NotIn(value...)), nil
+            {{ end }}
+
+            {{ if or $field.Type.Type.Integer $field.Type.Type.Float }}
+            case LtFilterOperator:
+                value, err := decodeFilterValue[{{ $field.Type }}](raw)
+                if err != nil {
+                    return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                }
+
+                return FilterPredicate({{ $node.Package  }}.{{ $field.StructField }}LT(value)), nil
+
+            case LteFilterOperator:
+                value, err := decodeFilterValue[{{ $field.Type }}](raw)
+                if err != nil {
+                    return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                }
+
+                return FilterPredicate({{ $node.Package  }}.{{ $field.StructField }}LTE(value)), nil
+
+            case GtFilterOperator:
+                value, err := decodeFilterValue[{{ $field.Type }}](raw)
+                if err != nil {
+                    return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                }
+
+                return FilterPredicate({{ $node.Package  }}.{{ $field.StructField }}GT(value)), nil
+
+            case GteFilterOperator:
+                value, err := decodeFilterValue[{{ $field.Type }}](raw)
+                if err != nil {
+                    return nil, errors.Wrapf(err, "failed to decode filter value for field %s", path[0])
+                }
+
+                return FilterPredicate({{ $node.Package  }}.{{ $field.StructField }}GTE(value)), nil
+            {{ end }}
+            }
+        {{ end }}
+        }
+    }
+
+    switch path[0] {
+    {{ range $edge := $node.Edges }}
+    case "{{ $edge.Name }}":
+        child, err := buildFilterPredicate("{{ $edge.Type.Name }}", path[1:], operator, raw)
+        if err != nil {
+            return nil, err
+        }
+
+        return FilterPredicate({{ $node.Package }}.Has{{ $edge.StructField }}With(
+            predicate.{{ $edge.Type.Name }}(child),
+        )), nil
+    {{ end }}
+    }
+
+    return nil, errors.New("could not generate any predicate")
+}
+{{ end }}
+
+func buildFilterPredicate(entity string, path []string, operator FilterOperator, raw json.RawMessage) (FilterPredicate, error) {
+    switch entity {
+    {{ range $node := $.Nodes }}
+    case "{{ $node.Name }}":
+        return build{{ $node.Name }}FilterPredicate(path, operator, raw)
+    {{ end }}
+    }
+
+    return nil, errors.New("could not generate any predicate")
+}
+
+
+
+{{ end }}

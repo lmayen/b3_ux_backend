@@ -2068,11 +2068,12 @@ type WywwMovieMutation struct {
 	original_title   *string
 	content_rating   *wywwmovie.ContentRating
 	description      *string
-	poster           *string
-	thumbnail        *string
+	poster_path      *string
+	banner_path      *string
 	released_year    *int32
 	addreleased_year *int32
-	runtime          *string
+	runtime          *int32
+	addruntime       *int32
 	rating           *float32
 	addrating        *float32
 	clearedFields    map[string]struct{}
@@ -2332,76 +2333,76 @@ func (m *WywwMovieMutation) ResetDescription() {
 	m.description = nil
 }
 
-// SetPoster sets the "poster" field.
-func (m *WywwMovieMutation) SetPoster(s string) {
-	m.poster = &s
+// SetPosterPath sets the "poster_path" field.
+func (m *WywwMovieMutation) SetPosterPath(s string) {
+	m.poster_path = &s
 }
 
-// Poster returns the value of the "poster" field in the mutation.
-func (m *WywwMovieMutation) Poster() (r string, exists bool) {
-	v := m.poster
+// PosterPath returns the value of the "poster_path" field in the mutation.
+func (m *WywwMovieMutation) PosterPath() (r string, exists bool) {
+	v := m.poster_path
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldPoster returns the old "poster" field's value of the WywwMovie entity.
+// OldPosterPath returns the old "poster_path" field's value of the WywwMovie entity.
 // If the WywwMovie object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WywwMovieMutation) OldPoster(ctx context.Context) (v *string, err error) {
+func (m *WywwMovieMutation) OldPosterPath(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPoster is only allowed on UpdateOne operations")
+		return v, errors.New("OldPosterPath is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPoster requires an ID field in the mutation")
+		return v, errors.New("OldPosterPath requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPoster: %w", err)
+		return v, fmt.Errorf("querying old value for OldPosterPath: %w", err)
 	}
-	return oldValue.Poster, nil
+	return oldValue.PosterPath, nil
 }
 
-// ResetPoster resets all changes to the "poster" field.
-func (m *WywwMovieMutation) ResetPoster() {
-	m.poster = nil
+// ResetPosterPath resets all changes to the "poster_path" field.
+func (m *WywwMovieMutation) ResetPosterPath() {
+	m.poster_path = nil
 }
 
-// SetThumbnail sets the "thumbnail" field.
-func (m *WywwMovieMutation) SetThumbnail(s string) {
-	m.thumbnail = &s
+// SetBannerPath sets the "banner_path" field.
+func (m *WywwMovieMutation) SetBannerPath(s string) {
+	m.banner_path = &s
 }
 
-// Thumbnail returns the value of the "thumbnail" field in the mutation.
-func (m *WywwMovieMutation) Thumbnail() (r string, exists bool) {
-	v := m.thumbnail
+// BannerPath returns the value of the "banner_path" field in the mutation.
+func (m *WywwMovieMutation) BannerPath() (r string, exists bool) {
+	v := m.banner_path
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldThumbnail returns the old "thumbnail" field's value of the WywwMovie entity.
+// OldBannerPath returns the old "banner_path" field's value of the WywwMovie entity.
 // If the WywwMovie object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WywwMovieMutation) OldThumbnail(ctx context.Context) (v *string, err error) {
+func (m *WywwMovieMutation) OldBannerPath(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldThumbnail is only allowed on UpdateOne operations")
+		return v, errors.New("OldBannerPath is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldThumbnail requires an ID field in the mutation")
+		return v, errors.New("OldBannerPath requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldThumbnail: %w", err)
+		return v, fmt.Errorf("querying old value for OldBannerPath: %w", err)
 	}
-	return oldValue.Thumbnail, nil
+	return oldValue.BannerPath, nil
 }
 
-// ResetThumbnail resets all changes to the "thumbnail" field.
-func (m *WywwMovieMutation) ResetThumbnail() {
-	m.thumbnail = nil
+// ResetBannerPath resets all changes to the "banner_path" field.
+func (m *WywwMovieMutation) ResetBannerPath() {
+	m.banner_path = nil
 }
 
 // SetReleasedYear sets the "released_year" field.
@@ -2461,12 +2462,13 @@ func (m *WywwMovieMutation) ResetReleasedYear() {
 }
 
 // SetRuntime sets the "runtime" field.
-func (m *WywwMovieMutation) SetRuntime(s string) {
-	m.runtime = &s
+func (m *WywwMovieMutation) SetRuntime(i int32) {
+	m.runtime = &i
+	m.addruntime = nil
 }
 
 // Runtime returns the value of the "runtime" field in the mutation.
-func (m *WywwMovieMutation) Runtime() (r string, exists bool) {
+func (m *WywwMovieMutation) Runtime() (r int32, exists bool) {
 	v := m.runtime
 	if v == nil {
 		return
@@ -2477,7 +2479,7 @@ func (m *WywwMovieMutation) Runtime() (r string, exists bool) {
 // OldRuntime returns the old "runtime" field's value of the WywwMovie entity.
 // If the WywwMovie object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WywwMovieMutation) OldRuntime(ctx context.Context) (v string, err error) {
+func (m *WywwMovieMutation) OldRuntime(ctx context.Context) (v int32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRuntime is only allowed on UpdateOne operations")
 	}
@@ -2491,9 +2493,28 @@ func (m *WywwMovieMutation) OldRuntime(ctx context.Context) (v string, err error
 	return oldValue.Runtime, nil
 }
 
+// AddRuntime adds i to the "runtime" field.
+func (m *WywwMovieMutation) AddRuntime(i int32) {
+	if m.addruntime != nil {
+		*m.addruntime += i
+	} else {
+		m.addruntime = &i
+	}
+}
+
+// AddedRuntime returns the value that was added to the "runtime" field in this mutation.
+func (m *WywwMovieMutation) AddedRuntime() (r int32, exists bool) {
+	v := m.addruntime
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetRuntime resets all changes to the "runtime" field.
 func (m *WywwMovieMutation) ResetRuntime() {
 	m.runtime = nil
+	m.addruntime = nil
 }
 
 // SetRating sets the "rating" field.
@@ -2653,11 +2674,11 @@ func (m *WywwMovieMutation) Fields() []string {
 	if m.description != nil {
 		fields = append(fields, wywwmovie.FieldDescription)
 	}
-	if m.poster != nil {
-		fields = append(fields, wywwmovie.FieldPoster)
+	if m.poster_path != nil {
+		fields = append(fields, wywwmovie.FieldPosterPath)
 	}
-	if m.thumbnail != nil {
-		fields = append(fields, wywwmovie.FieldThumbnail)
+	if m.banner_path != nil {
+		fields = append(fields, wywwmovie.FieldBannerPath)
 	}
 	if m.released_year != nil {
 		fields = append(fields, wywwmovie.FieldReleasedYear)
@@ -2684,10 +2705,10 @@ func (m *WywwMovieMutation) Field(name string) (ent.Value, bool) {
 		return m.ContentRating()
 	case wywwmovie.FieldDescription:
 		return m.Description()
-	case wywwmovie.FieldPoster:
-		return m.Poster()
-	case wywwmovie.FieldThumbnail:
-		return m.Thumbnail()
+	case wywwmovie.FieldPosterPath:
+		return m.PosterPath()
+	case wywwmovie.FieldBannerPath:
+		return m.BannerPath()
 	case wywwmovie.FieldReleasedYear:
 		return m.ReleasedYear()
 	case wywwmovie.FieldRuntime:
@@ -2711,10 +2732,10 @@ func (m *WywwMovieMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldContentRating(ctx)
 	case wywwmovie.FieldDescription:
 		return m.OldDescription(ctx)
-	case wywwmovie.FieldPoster:
-		return m.OldPoster(ctx)
-	case wywwmovie.FieldThumbnail:
-		return m.OldThumbnail(ctx)
+	case wywwmovie.FieldPosterPath:
+		return m.OldPosterPath(ctx)
+	case wywwmovie.FieldBannerPath:
+		return m.OldBannerPath(ctx)
 	case wywwmovie.FieldReleasedYear:
 		return m.OldReleasedYear(ctx)
 	case wywwmovie.FieldRuntime:
@@ -2758,19 +2779,19 @@ func (m *WywwMovieMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDescription(v)
 		return nil
-	case wywwmovie.FieldPoster:
+	case wywwmovie.FieldPosterPath:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetPoster(v)
+		m.SetPosterPath(v)
 		return nil
-	case wywwmovie.FieldThumbnail:
+	case wywwmovie.FieldBannerPath:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetThumbnail(v)
+		m.SetBannerPath(v)
 		return nil
 	case wywwmovie.FieldReleasedYear:
 		v, ok := value.(int32)
@@ -2780,7 +2801,7 @@ func (m *WywwMovieMutation) SetField(name string, value ent.Value) error {
 		m.SetReleasedYear(v)
 		return nil
 	case wywwmovie.FieldRuntime:
-		v, ok := value.(string)
+		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2804,6 +2825,9 @@ func (m *WywwMovieMutation) AddedFields() []string {
 	if m.addreleased_year != nil {
 		fields = append(fields, wywwmovie.FieldReleasedYear)
 	}
+	if m.addruntime != nil {
+		fields = append(fields, wywwmovie.FieldRuntime)
+	}
 	if m.addrating != nil {
 		fields = append(fields, wywwmovie.FieldRating)
 	}
@@ -2817,6 +2841,8 @@ func (m *WywwMovieMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case wywwmovie.FieldReleasedYear:
 		return m.AddedReleasedYear()
+	case wywwmovie.FieldRuntime:
+		return m.AddedRuntime()
 	case wywwmovie.FieldRating:
 		return m.AddedRating()
 	}
@@ -2834,6 +2860,13 @@ func (m *WywwMovieMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddReleasedYear(v)
+		return nil
+	case wywwmovie.FieldRuntime:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRuntime(v)
 		return nil
 	case wywwmovie.FieldRating:
 		v, ok := value.(float32)
@@ -2881,11 +2914,11 @@ func (m *WywwMovieMutation) ResetField(name string) error {
 	case wywwmovie.FieldDescription:
 		m.ResetDescription()
 		return nil
-	case wywwmovie.FieldPoster:
-		m.ResetPoster()
+	case wywwmovie.FieldPosterPath:
+		m.ResetPosterPath()
 		return nil
-	case wywwmovie.FieldThumbnail:
-		m.ResetThumbnail()
+	case wywwmovie.FieldBannerPath:
+		m.ResetBannerPath()
 		return nil
 	case wywwmovie.FieldReleasedYear:
 		m.ResetReleasedYear()

@@ -37,13 +37,13 @@ func (WywwMovie) Fields() []ent.Field {
 
 		field.String("description").NotEmpty(),
 
-		field.String("poster").Nillable(),
+		field.String("poster_path").Nillable(),
 
-		field.String("thumbnail").Nillable(),
+		field.String("banner_path").Nillable(),
 
-		field.Int32("released_year"),
+		field.Int32("released_year").NonNegative(),
 
-		field.String("runtime").NotEmpty(),
+		field.Int32("runtime").NonNegative(),
 
 		field.Float32("rating"),
 	}

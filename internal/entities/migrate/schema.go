@@ -60,10 +60,10 @@ var (
 		{Name: "original_title", Type: field.TypeString},
 		{Name: "content_rating", Type: field.TypeEnum, Enums: []string{"Approved", "G", "NC-17", "Not Rated", "PG", "PG-13", "Passed", "R"}},
 		{Name: "description", Type: field.TypeString},
-		{Name: "poster", Type: field.TypeString},
-		{Name: "thumbnail", Type: field.TypeString},
+		{Name: "poster_path", Type: field.TypeString},
+		{Name: "banner_path", Type: field.TypeString},
 		{Name: "released_year", Type: field.TypeInt32},
-		{Name: "runtime", Type: field.TypeString},
+		{Name: "runtime", Type: field.TypeInt32},
 		{Name: "rating", Type: field.TypeFloat32},
 	}
 	// WywwMoviesTable holds the schema information for the "wyww_movies" table.

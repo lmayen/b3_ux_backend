@@ -45,15 +45,15 @@ func (_c *WywwMovieCreate) SetDescription(v string) *WywwMovieCreate {
 	return _c
 }
 
-// SetPoster sets the "poster" field.
-func (_c *WywwMovieCreate) SetPoster(v string) *WywwMovieCreate {
-	_c.mutation.SetPoster(v)
+// SetPosterPath sets the "poster_path" field.
+func (_c *WywwMovieCreate) SetPosterPath(v string) *WywwMovieCreate {
+	_c.mutation.SetPosterPath(v)
 	return _c
 }
 
-// SetThumbnail sets the "thumbnail" field.
-func (_c *WywwMovieCreate) SetThumbnail(v string) *WywwMovieCreate {
-	_c.mutation.SetThumbnail(v)
+// SetBannerPath sets the "banner_path" field.
+func (_c *WywwMovieCreate) SetBannerPath(v string) *WywwMovieCreate {
+	_c.mutation.SetBannerPath(v)
 	return _c
 }
 
@@ -64,7 +64,7 @@ func (_c *WywwMovieCreate) SetReleasedYear(v int32) *WywwMovieCreate {
 }
 
 // SetRuntime sets the "runtime" field.
-func (_c *WywwMovieCreate) SetRuntime(v string) *WywwMovieCreate {
+func (_c *WywwMovieCreate) SetRuntime(v int32) *WywwMovieCreate {
 	_c.mutation.SetRuntime(v)
 	return _c
 }
@@ -179,14 +179,19 @@ func (_c *WywwMovieCreate) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`entities: validator failed for field "WywwMovie.description": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Poster(); !ok {
-		return &ValidationError{Name: "poster", err: errors.New(`entities: missing required field "WywwMovie.poster"`)}
+	if _, ok := _c.mutation.PosterPath(); !ok {
+		return &ValidationError{Name: "poster_path", err: errors.New(`entities: missing required field "WywwMovie.poster_path"`)}
 	}
-	if _, ok := _c.mutation.Thumbnail(); !ok {
-		return &ValidationError{Name: "thumbnail", err: errors.New(`entities: missing required field "WywwMovie.thumbnail"`)}
+	if _, ok := _c.mutation.BannerPath(); !ok {
+		return &ValidationError{Name: "banner_path", err: errors.New(`entities: missing required field "WywwMovie.banner_path"`)}
 	}
 	if _, ok := _c.mutation.ReleasedYear(); !ok {
 		return &ValidationError{Name: "released_year", err: errors.New(`entities: missing required field "WywwMovie.released_year"`)}
+	}
+	if v, ok := _c.mutation.ReleasedYear(); ok {
+		if err := wywwmovie.ReleasedYearValidator(v); err != nil {
+			return &ValidationError{Name: "released_year", err: fmt.Errorf(`entities: validator failed for field "WywwMovie.released_year": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.Runtime(); !ok {
 		return &ValidationError{Name: "runtime", err: errors.New(`entities: missing required field "WywwMovie.runtime"`)}
@@ -250,20 +255,20 @@ func (_c *WywwMovieCreate) createSpec() (*WywwMovie, *sqlgraph.CreateSpec) {
 		_spec.SetField(wywwmovie.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
-	if value, ok := _c.mutation.Poster(); ok {
-		_spec.SetField(wywwmovie.FieldPoster, field.TypeString, value)
-		_node.Poster = &value
+	if value, ok := _c.mutation.PosterPath(); ok {
+		_spec.SetField(wywwmovie.FieldPosterPath, field.TypeString, value)
+		_node.PosterPath = &value
 	}
-	if value, ok := _c.mutation.Thumbnail(); ok {
-		_spec.SetField(wywwmovie.FieldThumbnail, field.TypeString, value)
-		_node.Thumbnail = &value
+	if value, ok := _c.mutation.BannerPath(); ok {
+		_spec.SetField(wywwmovie.FieldBannerPath, field.TypeString, value)
+		_node.BannerPath = &value
 	}
 	if value, ok := _c.mutation.ReleasedYear(); ok {
 		_spec.SetField(wywwmovie.FieldReleasedYear, field.TypeInt32, value)
 		_node.ReleasedYear = value
 	}
 	if value, ok := _c.mutation.Runtime(); ok {
-		_spec.SetField(wywwmovie.FieldRuntime, field.TypeString, value)
+		_spec.SetField(wywwmovie.FieldRuntime, field.TypeInt32, value)
 		_node.Runtime = value
 	}
 	if value, ok := _c.mutation.Rating(); ok {

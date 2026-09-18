@@ -3,6 +3,7 @@ package db
 import (
 	"b3_ux_backend/internal/config"
 	"b3_ux_backend/internal/entities"
+	"b3_ux_backend/internal/fsutils"
 	"context"
 	"database/sql"
 	"fmt"
@@ -17,6 +18,10 @@ import (
 var Client *entities.Client
 
 func InitDb(ctx context.Context, cfg *config.Config) (*entities.Client, error) {
+	if !fsutils.Exists(cfg.App.SqlitePath) {
+		CreateAppEntities()
+	}
+
 	dsn := fmt.Sprintf("file:%s?_fk=1", filepath.ToSlash(cfg.App.SqlitePath))
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {

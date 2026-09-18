@@ -85,30 +85,30 @@ func (_u *WywwMovieUpdate) SetNillableDescription(v *string) *WywwMovieUpdate {
 	return _u
 }
 
-// SetPoster sets the "poster" field.
-func (_u *WywwMovieUpdate) SetPoster(v string) *WywwMovieUpdate {
-	_u.mutation.SetPoster(v)
+// SetPosterPath sets the "poster_path" field.
+func (_u *WywwMovieUpdate) SetPosterPath(v string) *WywwMovieUpdate {
+	_u.mutation.SetPosterPath(v)
 	return _u
 }
 
-// SetNillablePoster sets the "poster" field if the given value is not nil.
-func (_u *WywwMovieUpdate) SetNillablePoster(v *string) *WywwMovieUpdate {
+// SetNillablePosterPath sets the "poster_path" field if the given value is not nil.
+func (_u *WywwMovieUpdate) SetNillablePosterPath(v *string) *WywwMovieUpdate {
 	if v != nil {
-		_u.SetPoster(*v)
+		_u.SetPosterPath(*v)
 	}
 	return _u
 }
 
-// SetThumbnail sets the "thumbnail" field.
-func (_u *WywwMovieUpdate) SetThumbnail(v string) *WywwMovieUpdate {
-	_u.mutation.SetThumbnail(v)
+// SetBannerPath sets the "banner_path" field.
+func (_u *WywwMovieUpdate) SetBannerPath(v string) *WywwMovieUpdate {
+	_u.mutation.SetBannerPath(v)
 	return _u
 }
 
-// SetNillableThumbnail sets the "thumbnail" field if the given value is not nil.
-func (_u *WywwMovieUpdate) SetNillableThumbnail(v *string) *WywwMovieUpdate {
+// SetNillableBannerPath sets the "banner_path" field if the given value is not nil.
+func (_u *WywwMovieUpdate) SetNillableBannerPath(v *string) *WywwMovieUpdate {
 	if v != nil {
-		_u.SetThumbnail(*v)
+		_u.SetBannerPath(*v)
 	}
 	return _u
 }
@@ -135,16 +135,23 @@ func (_u *WywwMovieUpdate) AddReleasedYear(v int32) *WywwMovieUpdate {
 }
 
 // SetRuntime sets the "runtime" field.
-func (_u *WywwMovieUpdate) SetRuntime(v string) *WywwMovieUpdate {
+func (_u *WywwMovieUpdate) SetRuntime(v int32) *WywwMovieUpdate {
+	_u.mutation.ResetRuntime()
 	_u.mutation.SetRuntime(v)
 	return _u
 }
 
 // SetNillableRuntime sets the "runtime" field if the given value is not nil.
-func (_u *WywwMovieUpdate) SetNillableRuntime(v *string) *WywwMovieUpdate {
+func (_u *WywwMovieUpdate) SetNillableRuntime(v *int32) *WywwMovieUpdate {
 	if v != nil {
 		_u.SetRuntime(*v)
 	}
+	return _u
+}
+
+// AddRuntime adds value to the "runtime" field.
+func (_u *WywwMovieUpdate) AddRuntime(v int32) *WywwMovieUpdate {
+	_u.mutation.AddRuntime(v)
 	return _u
 }
 
@@ -259,6 +266,11 @@ func (_u *WywwMovieUpdate) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`entities: validator failed for field "WywwMovie.description": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.ReleasedYear(); ok {
+		if err := wywwmovie.ReleasedYearValidator(v); err != nil {
+			return &ValidationError{Name: "released_year", err: fmt.Errorf(`entities: validator failed for field "WywwMovie.released_year": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Runtime(); ok {
 		if err := wywwmovie.RuntimeValidator(v); err != nil {
 			return &ValidationError{Name: "runtime", err: fmt.Errorf(`entities: validator failed for field "WywwMovie.runtime": %w`, err)}
@@ -291,11 +303,11 @@ func (_u *WywwMovieUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(wywwmovie.FieldDescription, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Poster(); ok {
-		_spec.SetField(wywwmovie.FieldPoster, field.TypeString, value)
+	if value, ok := _u.mutation.PosterPath(); ok {
+		_spec.SetField(wywwmovie.FieldPosterPath, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Thumbnail(); ok {
-		_spec.SetField(wywwmovie.FieldThumbnail, field.TypeString, value)
+	if value, ok := _u.mutation.BannerPath(); ok {
+		_spec.SetField(wywwmovie.FieldBannerPath, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.ReleasedYear(); ok {
 		_spec.SetField(wywwmovie.FieldReleasedYear, field.TypeInt32, value)
@@ -304,7 +316,10 @@ func (_u *WywwMovieUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.AddField(wywwmovie.FieldReleasedYear, field.TypeInt32, value)
 	}
 	if value, ok := _u.mutation.Runtime(); ok {
-		_spec.SetField(wywwmovie.FieldRuntime, field.TypeString, value)
+		_spec.SetField(wywwmovie.FieldRuntime, field.TypeInt32, value)
+	}
+	if value, ok := _u.mutation.AddedRuntime(); ok {
+		_spec.AddField(wywwmovie.FieldRuntime, field.TypeInt32, value)
 	}
 	if value, ok := _u.mutation.Rating(); ok {
 		_spec.SetField(wywwmovie.FieldRating, field.TypeFloat32, value)
@@ -433,30 +448,30 @@ func (_u *WywwMovieUpdateOne) SetNillableDescription(v *string) *WywwMovieUpdate
 	return _u
 }
 
-// SetPoster sets the "poster" field.
-func (_u *WywwMovieUpdateOne) SetPoster(v string) *WywwMovieUpdateOne {
-	_u.mutation.SetPoster(v)
+// SetPosterPath sets the "poster_path" field.
+func (_u *WywwMovieUpdateOne) SetPosterPath(v string) *WywwMovieUpdateOne {
+	_u.mutation.SetPosterPath(v)
 	return _u
 }
 
-// SetNillablePoster sets the "poster" field if the given value is not nil.
-func (_u *WywwMovieUpdateOne) SetNillablePoster(v *string) *WywwMovieUpdateOne {
+// SetNillablePosterPath sets the "poster_path" field if the given value is not nil.
+func (_u *WywwMovieUpdateOne) SetNillablePosterPath(v *string) *WywwMovieUpdateOne {
 	if v != nil {
-		_u.SetPoster(*v)
+		_u.SetPosterPath(*v)
 	}
 	return _u
 }
 
-// SetThumbnail sets the "thumbnail" field.
-func (_u *WywwMovieUpdateOne) SetThumbnail(v string) *WywwMovieUpdateOne {
-	_u.mutation.SetThumbnail(v)
+// SetBannerPath sets the "banner_path" field.
+func (_u *WywwMovieUpdateOne) SetBannerPath(v string) *WywwMovieUpdateOne {
+	_u.mutation.SetBannerPath(v)
 	return _u
 }
 
-// SetNillableThumbnail sets the "thumbnail" field if the given value is not nil.
-func (_u *WywwMovieUpdateOne) SetNillableThumbnail(v *string) *WywwMovieUpdateOne {
+// SetNillableBannerPath sets the "banner_path" field if the given value is not nil.
+func (_u *WywwMovieUpdateOne) SetNillableBannerPath(v *string) *WywwMovieUpdateOne {
 	if v != nil {
-		_u.SetThumbnail(*v)
+		_u.SetBannerPath(*v)
 	}
 	return _u
 }
@@ -483,16 +498,23 @@ func (_u *WywwMovieUpdateOne) AddReleasedYear(v int32) *WywwMovieUpdateOne {
 }
 
 // SetRuntime sets the "runtime" field.
-func (_u *WywwMovieUpdateOne) SetRuntime(v string) *WywwMovieUpdateOne {
+func (_u *WywwMovieUpdateOne) SetRuntime(v int32) *WywwMovieUpdateOne {
+	_u.mutation.ResetRuntime()
 	_u.mutation.SetRuntime(v)
 	return _u
 }
 
 // SetNillableRuntime sets the "runtime" field if the given value is not nil.
-func (_u *WywwMovieUpdateOne) SetNillableRuntime(v *string) *WywwMovieUpdateOne {
+func (_u *WywwMovieUpdateOne) SetNillableRuntime(v *int32) *WywwMovieUpdateOne {
 	if v != nil {
 		_u.SetRuntime(*v)
 	}
+	return _u
+}
+
+// AddRuntime adds value to the "runtime" field.
+func (_u *WywwMovieUpdateOne) AddRuntime(v int32) *WywwMovieUpdateOne {
+	_u.mutation.AddRuntime(v)
 	return _u
 }
 
@@ -620,6 +642,11 @@ func (_u *WywwMovieUpdateOne) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`entities: validator failed for field "WywwMovie.description": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.ReleasedYear(); ok {
+		if err := wywwmovie.ReleasedYearValidator(v); err != nil {
+			return &ValidationError{Name: "released_year", err: fmt.Errorf(`entities: validator failed for field "WywwMovie.released_year": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Runtime(); ok {
 		if err := wywwmovie.RuntimeValidator(v); err != nil {
 			return &ValidationError{Name: "runtime", err: fmt.Errorf(`entities: validator failed for field "WywwMovie.runtime": %w`, err)}
@@ -669,11 +696,11 @@ func (_u *WywwMovieUpdateOne) sqlSave(ctx context.Context) (_node *WywwMovie, er
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(wywwmovie.FieldDescription, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Poster(); ok {
-		_spec.SetField(wywwmovie.FieldPoster, field.TypeString, value)
+	if value, ok := _u.mutation.PosterPath(); ok {
+		_spec.SetField(wywwmovie.FieldPosterPath, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Thumbnail(); ok {
-		_spec.SetField(wywwmovie.FieldThumbnail, field.TypeString, value)
+	if value, ok := _u.mutation.BannerPath(); ok {
+		_spec.SetField(wywwmovie.FieldBannerPath, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.ReleasedYear(); ok {
 		_spec.SetField(wywwmovie.FieldReleasedYear, field.TypeInt32, value)
@@ -682,7 +709,10 @@ func (_u *WywwMovieUpdateOne) sqlSave(ctx context.Context) (_node *WywwMovie, er
 		_spec.AddField(wywwmovie.FieldReleasedYear, field.TypeInt32, value)
 	}
 	if value, ok := _u.mutation.Runtime(); ok {
-		_spec.SetField(wywwmovie.FieldRuntime, field.TypeString, value)
+		_spec.SetField(wywwmovie.FieldRuntime, field.TypeInt32, value)
+	}
+	if value, ok := _u.mutation.AddedRuntime(); ok {
+		_spec.AddField(wywwmovie.FieldRuntime, field.TypeInt32, value)
 	}
 	if value, ok := _u.mutation.Rating(); ok {
 		_spec.SetField(wywwmovie.FieldRating, field.TypeFloat32, value)

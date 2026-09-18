@@ -1,0 +1,61 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "sortingHelpers" }}
+
+{{ template "header" $ }}
+
+import (
+    "entgo.io/ent/dialect/sql"
+
+    {{ range $node := $.Nodes }}
+    {{ $node.Package }} "{{ $.Config.Package }}/{{ $node.PackageDir }}"
+    {{ end }}
+)
+
+type SortDirection string
+
+const (
+	SortDirectionAsc  SortDirection = "ASC"
+	SortDirectionDesc SortDirection = "DESC"
+)
+
+type SortOptions struct {
+	SortField string        `json:"sortField" form:"sortField"`
+	SortOrder SortDirection `json:"sortOrder" form:"sortOrder"`
+}
+
+func (s SortDirection) TermOption() sql.OrderTermOption {
+	if s == SortDirectionAsc {
+		return sql.OrderAsc()
+	}
+
+	return sql.OrderDesc()
+}
+
+
+{{ range $node := $.Nodes }}
+
+func (q *{{ $node.QueryName }}) ApplySortingOptions(options SortOptions) *{{ $node.QueryName }} {
+    switch options.SortField {
+
+    {{ if $node.ID }}
+    case "id":
+        q.Order({{ $node.Package }}.ByID(options.SortOrder.TermOption()))
+    {{ end }}
+
+    {{ range $field := $node.Fields }}
+    case "{{ $field.Name }}":
+        q.Order({{ $node.Package }}.By{{ $field.StructField  }}(options.SortOrder.TermOption()))
+    {{ end }}
+    {{ if $node.ID }}
+    default:
+        q.Order({{ $node.Package }}.ByID(sql.OrderAsc()))
+    {{ end }}
+    }
+
+    return q
+}
+
+{{ end }}
+
+{{ end }}

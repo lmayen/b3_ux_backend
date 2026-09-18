@@ -25,14 +25,14 @@ type WywwMovie struct {
 	ContentRating wywwmovie.ContentRating `json:"content_rating,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
-	// Poster holds the value of the "poster" field.
-	Poster *string `json:"poster,omitempty"`
-	// Thumbnail holds the value of the "thumbnail" field.
-	Thumbnail *string `json:"thumbnail,omitempty"`
+	// PosterPath holds the value of the "poster_path" field.
+	PosterPath *string `json:"poster_path,omitempty"`
+	// BannerPath holds the value of the "banner_path" field.
+	BannerPath *string `json:"banner_path,omitempty"`
 	// ReleasedYear holds the value of the "released_year" field.
 	ReleasedYear int32 `json:"released_year,omitempty"`
 	// Runtime holds the value of the "runtime" field.
-	Runtime string `json:"runtime,omitempty"`
+	Runtime int32 `json:"runtime,omitempty"`
 	// Rating holds the value of the "rating" field.
 	Rating float32 `json:"rating,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -66,9 +66,9 @@ func (*WywwMovie) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case wywwmovie.FieldRating:
 			values[i] = new(sql.NullFloat64)
-		case wywwmovie.FieldReleasedYear:
+		case wywwmovie.FieldReleasedYear, wywwmovie.FieldRuntime:
 			values[i] = new(sql.NullInt64)
-		case wywwmovie.FieldMovieTitle, wywwmovie.FieldOriginalTitle, wywwmovie.FieldContentRating, wywwmovie.FieldDescription, wywwmovie.FieldPoster, wywwmovie.FieldThumbnail, wywwmovie.FieldRuntime:
+		case wywwmovie.FieldMovieTitle, wywwmovie.FieldOriginalTitle, wywwmovie.FieldContentRating, wywwmovie.FieldDescription, wywwmovie.FieldPosterPath, wywwmovie.FieldBannerPath:
 			values[i] = new(sql.NullString)
 		case wywwmovie.FieldID:
 			values[i] = new(uuid.UUID)
@@ -117,19 +117,19 @@ func (_m *WywwMovie) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Description = value.String
 			}
-		case wywwmovie.FieldPoster:
+		case wywwmovie.FieldPosterPath:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field poster", values[i])
+				return fmt.Errorf("unexpected type %T for field poster_path", values[i])
 			} else if value.Valid {
-				_m.Poster = new(string)
-				*_m.Poster = value.String
+				_m.PosterPath = new(string)
+				*_m.PosterPath = value.String
 			}
-		case wywwmovie.FieldThumbnail:
+		case wywwmovie.FieldBannerPath:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field thumbnail", values[i])
+				return fmt.Errorf("unexpected type %T for field banner_path", values[i])
 			} else if value.Valid {
-				_m.Thumbnail = new(string)
-				*_m.Thumbnail = value.String
+				_m.BannerPath = new(string)
+				*_m.BannerPath = value.String
 			}
 		case wywwmovie.FieldReleasedYear:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -138,10 +138,10 @@ func (_m *WywwMovie) assignValues(columns []string, values []any) error {
 				_m.ReleasedYear = int32(value.Int64)
 			}
 		case wywwmovie.FieldRuntime:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field runtime", values[i])
 			} else if value.Valid {
-				_m.Runtime = value.String
+				_m.Runtime = int32(value.Int64)
 			}
 		case wywwmovie.FieldRating:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -202,13 +202,13 @@ func (_m *WywwMovie) String() string {
 	builder.WriteString("description=")
 	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
-	if v := _m.Poster; v != nil {
-		builder.WriteString("poster=")
+	if v := _m.PosterPath; v != nil {
+		builder.WriteString("poster_path=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.Thumbnail; v != nil {
-		builder.WriteString("thumbnail=")
+	if v := _m.BannerPath; v != nil {
+		builder.WriteString("banner_path=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
@@ -216,7 +216,7 @@ func (_m *WywwMovie) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.ReleasedYear))
 	builder.WriteString(", ")
 	builder.WriteString("runtime=")
-	builder.WriteString(_m.Runtime)
+	builder.WriteString(fmt.Sprintf("%v", _m.Runtime))
 	builder.WriteString(", ")
 	builder.WriteString("rating=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Rating))

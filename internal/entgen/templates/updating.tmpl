@@ -1,0 +1,56 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "updateHelpers" }}
+
+{{ template "header" $ }}
+
+import (
+	"bytes"
+	"encoding/json"
+
+	"github.com/google/uuid"
+	"github.com/olekukonko/errors"
+
+	{{ range $node := $.Nodes }}
+    {{ $node.Package }} "{{ $.Config.Package }}/{{ $node.PackageDir }}"
+    {{ end }}
+)
+
+type UpdateField[T any] struct {
+	Present bool
+	Value   T
+}
+
+func (v *UpdateField[T]) UnmarshalJSON(data []byte) error {
+	v.Present = true
+
+	if bytes.Equal(bytes.TrimSpace(data), []byte("null")) {
+		return errors.New("field cannot be null")
+	}
+
+	return json.Unmarshal(data, &v.Value)
+}
+
+{{ range $node := $.Nodes }}
+type {{ $node.Name }}UpdateOptions struct {
+    {{ range $field := $node.Fields }}
+	{{ $field.StructField }}   *UpdateField[{{ $field.Type }}] `json:"{{ $field.Name }}" form:"{{ $field.Name }}"`
+    {{ end }}
+}
+
+func (u *{{ $node.Name }}Update) ApplyUpdateOptions(options *{{ $node.Name }}UpdateOptions) error {
+	if options == nil {
+		return errors.New("options cannot be nil")
+	}
+
+    {{ range $field := $node.Fields }}
+	if options.{{ $field.StructField }} != nil && options.{{ $field.StructField }}.Present {
+		u.Set{{ $field.StructField }}(options.{{ $field.StructField }}.Value)
+	}
+    {{ end }}
+
+	return nil
+}
+{{ end }}
+
+{{ end }}

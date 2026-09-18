@@ -70,14 +70,14 @@ func Description(v string) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldEQ(FieldDescription, v))
 }
 
-// Poster applies equality check predicate on the "poster" field. It's identical to PosterEQ.
-func Poster(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEQ(FieldPoster, v))
+// PosterPath applies equality check predicate on the "poster_path" field. It's identical to PosterPathEQ.
+func PosterPath(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldEQ(FieldPosterPath, v))
 }
 
-// Thumbnail applies equality check predicate on the "thumbnail" field. It's identical to ThumbnailEQ.
-func Thumbnail(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEQ(FieldThumbnail, v))
+// BannerPath applies equality check predicate on the "banner_path" field. It's identical to BannerPathEQ.
+func BannerPath(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldEQ(FieldBannerPath, v))
 }
 
 // ReleasedYear applies equality check predicate on the "released_year" field. It's identical to ReleasedYearEQ.
@@ -86,7 +86,7 @@ func ReleasedYear(v int32) predicate.WywwMovie {
 }
 
 // Runtime applies equality check predicate on the "runtime" field. It's identical to RuntimeEQ.
-func Runtime(v string) predicate.WywwMovie {
+func Runtime(v int32) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldEQ(FieldRuntime, v))
 }
 
@@ -310,134 +310,134 @@ func DescriptionContainsFold(v string) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldContainsFold(FieldDescription, v))
 }
 
-// PosterEQ applies the EQ predicate on the "poster" field.
-func PosterEQ(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEQ(FieldPoster, v))
+// PosterPathEQ applies the EQ predicate on the "poster_path" field.
+func PosterPathEQ(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldEQ(FieldPosterPath, v))
 }
 
-// PosterNEQ applies the NEQ predicate on the "poster" field.
-func PosterNEQ(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldNEQ(FieldPoster, v))
+// PosterPathNEQ applies the NEQ predicate on the "poster_path" field.
+func PosterPathNEQ(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldNEQ(FieldPosterPath, v))
 }
 
-// PosterIn applies the In predicate on the "poster" field.
-func PosterIn(vs ...string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldIn(FieldPoster, vs...))
+// PosterPathIn applies the In predicate on the "poster_path" field.
+func PosterPathIn(vs ...string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldIn(FieldPosterPath, vs...))
 }
 
-// PosterNotIn applies the NotIn predicate on the "poster" field.
-func PosterNotIn(vs ...string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldNotIn(FieldPoster, vs...))
+// PosterPathNotIn applies the NotIn predicate on the "poster_path" field.
+func PosterPathNotIn(vs ...string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldNotIn(FieldPosterPath, vs...))
 }
 
-// PosterGT applies the GT predicate on the "poster" field.
-func PosterGT(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldGT(FieldPoster, v))
+// PosterPathGT applies the GT predicate on the "poster_path" field.
+func PosterPathGT(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldGT(FieldPosterPath, v))
 }
 
-// PosterGTE applies the GTE predicate on the "poster" field.
-func PosterGTE(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldGTE(FieldPoster, v))
+// PosterPathGTE applies the GTE predicate on the "poster_path" field.
+func PosterPathGTE(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldGTE(FieldPosterPath, v))
 }
 
-// PosterLT applies the LT predicate on the "poster" field.
-func PosterLT(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldLT(FieldPoster, v))
+// PosterPathLT applies the LT predicate on the "poster_path" field.
+func PosterPathLT(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldLT(FieldPosterPath, v))
 }
 
-// PosterLTE applies the LTE predicate on the "poster" field.
-func PosterLTE(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldLTE(FieldPoster, v))
+// PosterPathLTE applies the LTE predicate on the "poster_path" field.
+func PosterPathLTE(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldLTE(FieldPosterPath, v))
 }
 
-// PosterContains applies the Contains predicate on the "poster" field.
-func PosterContains(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldContains(FieldPoster, v))
+// PosterPathContains applies the Contains predicate on the "poster_path" field.
+func PosterPathContains(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldContains(FieldPosterPath, v))
 }
 
-// PosterHasPrefix applies the HasPrefix predicate on the "poster" field.
-func PosterHasPrefix(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldHasPrefix(FieldPoster, v))
+// PosterPathHasPrefix applies the HasPrefix predicate on the "poster_path" field.
+func PosterPathHasPrefix(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldHasPrefix(FieldPosterPath, v))
 }
 
-// PosterHasSuffix applies the HasSuffix predicate on the "poster" field.
-func PosterHasSuffix(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldHasSuffix(FieldPoster, v))
+// PosterPathHasSuffix applies the HasSuffix predicate on the "poster_path" field.
+func PosterPathHasSuffix(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldHasSuffix(FieldPosterPath, v))
 }
 
-// PosterEqualFold applies the EqualFold predicate on the "poster" field.
-func PosterEqualFold(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEqualFold(FieldPoster, v))
+// PosterPathEqualFold applies the EqualFold predicate on the "poster_path" field.
+func PosterPathEqualFold(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldEqualFold(FieldPosterPath, v))
 }
 
-// PosterContainsFold applies the ContainsFold predicate on the "poster" field.
-func PosterContainsFold(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldContainsFold(FieldPoster, v))
+// PosterPathContainsFold applies the ContainsFold predicate on the "poster_path" field.
+func PosterPathContainsFold(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldContainsFold(FieldPosterPath, v))
 }
 
-// ThumbnailEQ applies the EQ predicate on the "thumbnail" field.
-func ThumbnailEQ(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEQ(FieldThumbnail, v))
+// BannerPathEQ applies the EQ predicate on the "banner_path" field.
+func BannerPathEQ(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldEQ(FieldBannerPath, v))
 }
 
-// ThumbnailNEQ applies the NEQ predicate on the "thumbnail" field.
-func ThumbnailNEQ(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldNEQ(FieldThumbnail, v))
+// BannerPathNEQ applies the NEQ predicate on the "banner_path" field.
+func BannerPathNEQ(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldNEQ(FieldBannerPath, v))
 }
 
-// ThumbnailIn applies the In predicate on the "thumbnail" field.
-func ThumbnailIn(vs ...string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldIn(FieldThumbnail, vs...))
+// BannerPathIn applies the In predicate on the "banner_path" field.
+func BannerPathIn(vs ...string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldIn(FieldBannerPath, vs...))
 }
 
-// ThumbnailNotIn applies the NotIn predicate on the "thumbnail" field.
-func ThumbnailNotIn(vs ...string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldNotIn(FieldThumbnail, vs...))
+// BannerPathNotIn applies the NotIn predicate on the "banner_path" field.
+func BannerPathNotIn(vs ...string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldNotIn(FieldBannerPath, vs...))
 }
 
-// ThumbnailGT applies the GT predicate on the "thumbnail" field.
-func ThumbnailGT(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldGT(FieldThumbnail, v))
+// BannerPathGT applies the GT predicate on the "banner_path" field.
+func BannerPathGT(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldGT(FieldBannerPath, v))
 }
 
-// ThumbnailGTE applies the GTE predicate on the "thumbnail" field.
-func ThumbnailGTE(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldGTE(FieldThumbnail, v))
+// BannerPathGTE applies the GTE predicate on the "banner_path" field.
+func BannerPathGTE(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldGTE(FieldBannerPath, v))
 }
 
-// ThumbnailLT applies the LT predicate on the "thumbnail" field.
-func ThumbnailLT(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldLT(FieldThumbnail, v))
+// BannerPathLT applies the LT predicate on the "banner_path" field.
+func BannerPathLT(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldLT(FieldBannerPath, v))
 }
 
-// ThumbnailLTE applies the LTE predicate on the "thumbnail" field.
-func ThumbnailLTE(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldLTE(FieldThumbnail, v))
+// BannerPathLTE applies the LTE predicate on the "banner_path" field.
+func BannerPathLTE(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldLTE(FieldBannerPath, v))
 }
 
-// ThumbnailContains applies the Contains predicate on the "thumbnail" field.
-func ThumbnailContains(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldContains(FieldThumbnail, v))
+// BannerPathContains applies the Contains predicate on the "banner_path" field.
+func BannerPathContains(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldContains(FieldBannerPath, v))
 }
 
-// ThumbnailHasPrefix applies the HasPrefix predicate on the "thumbnail" field.
-func ThumbnailHasPrefix(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldHasPrefix(FieldThumbnail, v))
+// BannerPathHasPrefix applies the HasPrefix predicate on the "banner_path" field.
+func BannerPathHasPrefix(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldHasPrefix(FieldBannerPath, v))
 }
 
-// ThumbnailHasSuffix applies the HasSuffix predicate on the "thumbnail" field.
-func ThumbnailHasSuffix(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldHasSuffix(FieldThumbnail, v))
+// BannerPathHasSuffix applies the HasSuffix predicate on the "banner_path" field.
+func BannerPathHasSuffix(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldHasSuffix(FieldBannerPath, v))
 }
 
-// ThumbnailEqualFold applies the EqualFold predicate on the "thumbnail" field.
-func ThumbnailEqualFold(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEqualFold(FieldThumbnail, v))
+// BannerPathEqualFold applies the EqualFold predicate on the "banner_path" field.
+func BannerPathEqualFold(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldEqualFold(FieldBannerPath, v))
 }
 
-// ThumbnailContainsFold applies the ContainsFold predicate on the "thumbnail" field.
-func ThumbnailContainsFold(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldContainsFold(FieldThumbnail, v))
+// BannerPathContainsFold applies the ContainsFold predicate on the "banner_path" field.
+func BannerPathContainsFold(v string) predicate.WywwMovie {
+	return predicate.WywwMovie(sql.FieldContainsFold(FieldBannerPath, v))
 }
 
 // ReleasedYearEQ applies the EQ predicate on the "released_year" field.
@@ -481,68 +481,43 @@ func ReleasedYearLTE(v int32) predicate.WywwMovie {
 }
 
 // RuntimeEQ applies the EQ predicate on the "runtime" field.
-func RuntimeEQ(v string) predicate.WywwMovie {
+func RuntimeEQ(v int32) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldEQ(FieldRuntime, v))
 }
 
 // RuntimeNEQ applies the NEQ predicate on the "runtime" field.
-func RuntimeNEQ(v string) predicate.WywwMovie {
+func RuntimeNEQ(v int32) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldNEQ(FieldRuntime, v))
 }
 
 // RuntimeIn applies the In predicate on the "runtime" field.
-func RuntimeIn(vs ...string) predicate.WywwMovie {
+func RuntimeIn(vs ...int32) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldIn(FieldRuntime, vs...))
 }
 
 // RuntimeNotIn applies the NotIn predicate on the "runtime" field.
-func RuntimeNotIn(vs ...string) predicate.WywwMovie {
+func RuntimeNotIn(vs ...int32) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldNotIn(FieldRuntime, vs...))
 }
 
 // RuntimeGT applies the GT predicate on the "runtime" field.
-func RuntimeGT(v string) predicate.WywwMovie {
+func RuntimeGT(v int32) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldGT(FieldRuntime, v))
 }
 
 // RuntimeGTE applies the GTE predicate on the "runtime" field.
-func RuntimeGTE(v string) predicate.WywwMovie {
+func RuntimeGTE(v int32) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldGTE(FieldRuntime, v))
 }
 
 // RuntimeLT applies the LT predicate on the "runtime" field.
-func RuntimeLT(v string) predicate.WywwMovie {
+func RuntimeLT(v int32) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldLT(FieldRuntime, v))
 }
 
 // RuntimeLTE applies the LTE predicate on the "runtime" field.
-func RuntimeLTE(v string) predicate.WywwMovie {
+func RuntimeLTE(v int32) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldLTE(FieldRuntime, v))
-}
-
-// RuntimeContains applies the Contains predicate on the "runtime" field.
-func RuntimeContains(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldContains(FieldRuntime, v))
-}
-
-// RuntimeHasPrefix applies the HasPrefix predicate on the "runtime" field.
-func RuntimeHasPrefix(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldHasPrefix(FieldRuntime, v))
-}
-
-// RuntimeHasSuffix applies the HasSuffix predicate on the "runtime" field.
-func RuntimeHasSuffix(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldHasSuffix(FieldRuntime, v))
-}
-
-// RuntimeEqualFold applies the EqualFold predicate on the "runtime" field.
-func RuntimeEqualFold(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEqualFold(FieldRuntime, v))
-}
-
-// RuntimeContainsFold applies the ContainsFold predicate on the "runtime" field.
-func RuntimeContainsFold(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldContainsFold(FieldRuntime, v))
 }
 
 // RatingEQ applies the EQ predicate on the "rating" field.

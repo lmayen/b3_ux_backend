@@ -1,0 +1,20 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "paginationHelpers" }}
+
+{{ template "header" $ }}
+
+type PaginationOptions struct {
+	PageOffset int `json:"pageOffset" form:"pageOffset"`
+	PageLimit  int `json:"pageLimit" form:"pageLimit"`
+}
+
+{{ range $node := $.Nodes }}
+
+func (q *{{ $node.QueryName }}) ApplyPaginationOptions(options PaginationOptions) *{{ $node.QueryName }} {
+    return q.Offset(options.PageOffset).Limit(options.PageLimit)
+}
+
+{{ end }}
+
+{{ end }}

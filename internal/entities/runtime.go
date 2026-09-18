@@ -90,10 +90,14 @@ func init() {
 	wywwmovieDescDescription := wywwmovieFields[4].Descriptor()
 	// wywwmovie.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	wywwmovie.DescriptionValidator = wywwmovieDescDescription.Validators[0].(func(string) error)
+	// wywwmovieDescReleasedYear is the schema descriptor for released_year field.
+	wywwmovieDescReleasedYear := wywwmovieFields[7].Descriptor()
+	// wywwmovie.ReleasedYearValidator is a validator for the "released_year" field. It is called by the builders before save.
+	wywwmovie.ReleasedYearValidator = wywwmovieDescReleasedYear.Validators[0].(func(int32) error)
 	// wywwmovieDescRuntime is the schema descriptor for runtime field.
 	wywwmovieDescRuntime := wywwmovieFields[8].Descriptor()
 	// wywwmovie.RuntimeValidator is a validator for the "runtime" field. It is called by the builders before save.
-	wywwmovie.RuntimeValidator = wywwmovieDescRuntime.Validators[0].(func(string) error)
+	wywwmovie.RuntimeValidator = wywwmovieDescRuntime.Validators[0].(func(int32) error)
 	// wywwmovieDescID is the schema descriptor for id field.
 	wywwmovieDescID := wywwmovieFields[0].Descriptor()
 	// wywwmovie.DefaultID holds the default value on creation for the id field.

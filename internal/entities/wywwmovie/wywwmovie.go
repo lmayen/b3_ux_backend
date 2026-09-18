@@ -23,10 +23,10 @@ const (
 	FieldContentRating = "content_rating"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// FieldPoster holds the string denoting the poster field in the database.
-	FieldPoster = "poster"
-	// FieldThumbnail holds the string denoting the thumbnail field in the database.
-	FieldThumbnail = "thumbnail"
+	// FieldPosterPath holds the string denoting the poster_path field in the database.
+	FieldPosterPath = "poster_path"
+	// FieldBannerPath holds the string denoting the banner_path field in the database.
+	FieldBannerPath = "banner_path"
 	// FieldReleasedYear holds the string denoting the released_year field in the database.
 	FieldReleasedYear = "released_year"
 	// FieldRuntime holds the string denoting the runtime field in the database.
@@ -51,8 +51,8 @@ var Columns = []string{
 	FieldOriginalTitle,
 	FieldContentRating,
 	FieldDescription,
-	FieldPoster,
-	FieldThumbnail,
+	FieldPosterPath,
+	FieldBannerPath,
 	FieldReleasedYear,
 	FieldRuntime,
 	FieldRating,
@@ -81,8 +81,10 @@ var (
 	OriginalTitleValidator func(string) error
 	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	DescriptionValidator func(string) error
+	// ReleasedYearValidator is a validator for the "released_year" field. It is called by the builders before save.
+	ReleasedYearValidator func(int32) error
 	// RuntimeValidator is a validator for the "runtime" field. It is called by the builders before save.
-	RuntimeValidator func(string) error
+	RuntimeValidator func(int32) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -144,14 +146,14 @@ func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
-// ByPoster orders the results by the poster field.
-func ByPoster(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPoster, opts...).ToFunc()
+// ByPosterPath orders the results by the poster_path field.
+func ByPosterPath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPosterPath, opts...).ToFunc()
 }
 
-// ByThumbnail orders the results by the thumbnail field.
-func ByThumbnail(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldThumbnail, opts...).ToFunc()
+// ByBannerPath orders the results by the banner_path field.
+func ByBannerPath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannerPath, opts...).ToFunc()
 }
 
 // ByReleasedYear orders the results by the released_year field.
