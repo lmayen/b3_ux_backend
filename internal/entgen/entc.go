@@ -1,6 +1,6 @@
 //go:build ignore
 
-package entgen
+package main
 
 import (
 	"bytes"
@@ -32,9 +32,39 @@ func main() {
 					Target: "./models/data.ts",
 				},
 				assetTemplate{
+					Source: "./internal/entgen/models/pagination.tmpl",
+					Name:   "pagination",
+					Target: "./models/pagination.ts",
+				},
+				assetTemplate{
+					Source: "./internal/entgen/models/sorting.tmpl",
+					Name:   "sorting",
+					Target: "./models/sorting.ts",
+				},
+				assetTemplate{
+					Source: "./internal/entgen/models/update.tmpl",
+					Name:   "update",
+					Target: "./models/update.ts",
+				},
+				assetTemplate{
 					Source: "./internal/entgen/doc/schema.tmpl",
 					Name:   "schema",
 					Target: "./doc/schema.md",
+				},
+				assetTemplate{
+					Source: "./internal/entgen/api/findMany.tmpl",
+					Name:   "findMany",
+					Target: "./internal/server/api/findMany.go",
+				},
+				assetTemplate{
+					Source: "./internal/entgen/api/findOne.tmpl",
+					Name:   "findOne",
+					Target: "./internal/server/api/findOne.go",
+				},
+				assetTemplate{
+					Source: "./internal/entgen/api/updateOne.tmpl",
+					Name:   "updateOne",
+					Target: "./internal/server/api/updateOne.go",
 				},
 			),
 		},

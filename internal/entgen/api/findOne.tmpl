@@ -1,0 +1,50 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+{{ define "findOne" }}
+package api
+
+import (
+	"b3_ux_backend/internal/db"
+	"b3_ux_backend/internal/entities"
+	"b3_ux_backend/internal/server/core"
+
+	"github.com/gin-gonic/gin"
+	"github.com/olekukonko/errors"
+)
+
+type findOneParameters struct {
+	Filters []entities.FilterItem `json:"filters"`
+	Sorting *entities.SortOptions `json:"sorting,omitempty"`
+}
+
+{{ range $node := $.Nodes }}
+func FindOne{{ $node.Name }}(ctx *gin.Context) {
+	var params findOneParameters
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		core.HandleError(ctx, 400, "Could not bind parameters", err)
+		return
+	}
+
+	query := db.Client.{{ $node.Name }}.Query()
+
+	if params.Filters != nil {
+		err := query.ApplyFilterOptions(params.Filters)
+		if err != nil {
+			core.HandleError(ctx, 400, "Could not apply filters", err)
+			return
+		}
+	}
+
+	if params.Sorting != nil {
+		query.ApplySortingOptions(params.Sorting)
+	}
+
+	queryResult, err := query.First(ctx)
+	if err != nil {
+		core.HandleError(ctx, 500, "could not query artists", errors.Wrapf(err, "FindOneArtists ERR: could not query artist"))
+		return
+	}
+
+	ctx.JSON(200, queryResult.ToData())
+}
+{{ end }}
+{{ end }}

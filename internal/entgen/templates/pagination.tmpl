@@ -1,17 +1,17 @@
 {{/* gotype: entgo.io/ent/entc/gen.Graph */}}
 
-{{ define "paginationHelpers" }}
+{{ define "utils_pagination" }}
 
 {{ template "header" $ }}
 
 type PaginationOptions struct {
-	PageOffset int `json:"pageOffset" form:"pageOffset"`
-	PageLimit  int `json:"pageLimit" form:"pageLimit"`
+	PageOffset int `json:"page_offset" form:"page_offset"`
+	PageLimit  int `json:"page_limit" form:"page_limit"`
 }
 
 {{ range $node := $.Nodes }}
 
-func (q *{{ $node.QueryName }}) ApplyPaginationOptions(options PaginationOptions) *{{ $node.QueryName }} {
+func (q *{{ $node.QueryName }}) ApplyPaginationOptions(options *PaginationOptions) *{{ $node.QueryName }} {
     return q.Offset(options.PageOffset).Limit(options.PageLimit)
 }
 

@@ -3,8 +3,12 @@
 package entities
 
 import (
+	"b3_ux_backend/internal/entities/color"
+	"b3_ux_backend/internal/entities/image"
+	"b3_ux_backend/internal/entities/session"
 	"b3_ux_backend/internal/entities/storeapp"
 	"b3_ux_backend/internal/entities/storegenre"
+	"b3_ux_backend/internal/entities/user"
 	"b3_ux_backend/internal/entities/wywwgenre"
 	"b3_ux_backend/internal/entities/wywwmovie"
 	"context"
@@ -76,8 +80,12 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			color.Table:      color.ValidColumn,
+			image.Table:      image.ValidColumn,
+			session.Table:    session.ValidColumn,
 			storeapp.Table:   storeapp.ValidColumn,
 			storegenre.Table: storegenre.ValidColumn,
+			user.Table:       user.ValidColumn,
 			wywwgenre.Table:  wywwgenre.ValidColumn,
 			wywwmovie.Table:  wywwmovie.ValidColumn,
 		})

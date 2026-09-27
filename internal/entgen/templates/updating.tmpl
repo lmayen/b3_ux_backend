@@ -1,6 +1,6 @@
 {{/* gotype: entgo.io/ent/entc/gen.Graph */}}
 
-{{ define "updateHelpers" }}
+{{ define "utils_update" }}
 
 {{ template "header" $ }}
 
@@ -11,9 +11,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/olekukonko/errors"
 
-	{{ range $node := $.Nodes }}
+	{{- range $node := $.Nodes }}
     {{ $node.Package }} "{{ $.Config.Package }}/{{ $node.PackageDir }}"
-    {{ end }}
+    {{ end -}}
 )
 
 type UpdateField[T any] struct {
@@ -33,20 +33,30 @@ func (v *UpdateField[T]) UnmarshalJSON(data []byte) error {
 
 {{ range $node := $.Nodes }}
 type {{ $node.Name }}UpdateOptions struct {
-    {{ range $field := $node.Fields }}
+    {{- range $field := $node.MutableFields }}
+    {{- $public := true }}
+    {{- with $access := $field.Annotations.Access }}{{ $public = not $access.Private }}{{ end }}
+    {{- if $public }}
 	{{ $field.StructField }}   *UpdateField[{{ $field.Type }}] `json:"{{ $field.Name }}" form:"{{ $field.Name }}"`
+    {{ end -}}
     {{ end }}
 }
 
-func (u *{{ $node.Name }}Update) ApplyUpdateOptions(options *{{ $node.Name }}UpdateOptions) error {
+func (u *{{ $node.Name }}UpdateOne) ApplyUpdateOptions(options *{{ $node.Name }}UpdateOptions) error {
 	if options == nil {
 		return errors.New("options cannot be nil")
 	}
 
-    {{ range $field := $node.Fields }}
+    {{- range $field := $node.MutableFields }}
+    {{- $public := true }}
+    {{- with $access := $field.Annotations.Access }}{{ $public = not $access.Private }}{{ end }}
+    {{- if $public }}
+    {{ if not $field.Immutable }}
 	if options.{{ $field.StructField }} != nil && options.{{ $field.StructField }}.Present {
 		u.Set{{ $field.StructField }}(options.{{ $field.StructField }}.Value)
 	}
+    {{ end -}}
+    {{ end -}}
     {{ end }}
 
 	return nil

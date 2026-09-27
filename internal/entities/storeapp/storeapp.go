@@ -43,6 +43,10 @@ const (
 	FieldAdSupported = "ad_supported"
 	// EdgeGenres holds the string denoting the genres edge name in mutations.
 	EdgeGenres = "genres"
+	// EdgeImages holds the string denoting the images edge name in mutations.
+	EdgeImages = "images"
+	// EdgeUserInstallList holds the string denoting the user_install_list edge name in mutations.
+	EdgeUserInstallList = "user_install_list"
 	// Table holds the table name of the storeapp in the database.
 	Table = "store_apps"
 	// GenresTable is the table that holds the genres relation/edge. The primary key declared below.
@@ -50,6 +54,18 @@ const (
 	// GenresInverseTable is the table name for the StoreGenre entity.
 	// It exists in this package in order to avoid circular dependency with the "storegenre" package.
 	GenresInverseTable = "store_genres"
+	// ImagesTable is the table that holds the images relation/edge.
+	ImagesTable = "images"
+	// ImagesInverseTable is the table name for the Image entity.
+	// It exists in this package in order to avoid circular dependency with the "image" package.
+	ImagesInverseTable = "images"
+	// ImagesColumn is the table column denoting the images relation/edge.
+	ImagesColumn = "store_app_images"
+	// UserInstallListTable is the table that holds the user_install_list relation/edge. The primary key declared below.
+	UserInstallListTable = "user_installed_apps"
+	// UserInstallListInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserInstallListInverseTable = "users"
 )
 
 // Columns holds all SQL columns for storeapp fields.
@@ -74,6 +90,9 @@ var (
 	// GenresPrimaryKey and GenresColumn2 are the table columns denoting the
 	// primary key for the genres relation (M2M).
 	GenresPrimaryKey = []string{"store_app_id", "store_genre_id"}
+	// UserInstallListPrimaryKey and UserInstallListColumn2 are the table columns denoting the
+	// primary key for the user_install_list relation (M2M).
+	UserInstallListPrimaryKey = []string{"user_id", "store_app_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -275,10 +294,52 @@ func ByGenres(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newGenresStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByImagesCount orders the results by images count.
+func ByImagesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newImagesStep(), opts...)
+	}
+}
+
+// ByImages orders the results by images terms.
+func ByImages(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newImagesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByUserInstallListCount orders the results by user_install_list count.
+func ByUserInstallListCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newUserInstallListStep(), opts...)
+	}
+}
+
+// ByUserInstallList orders the results by user_install_list terms.
+func ByUserInstallList(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUserInstallListStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newGenresStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GenresInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, GenresTable, GenresPrimaryKey...),
+	)
+}
+func newImagesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ImagesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ImagesTable, ImagesColumn),
+	)
+}
+func newUserInstallListStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UserInstallListInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, UserInstallListTable, UserInstallListPrimaryKey...),
 	)
 }

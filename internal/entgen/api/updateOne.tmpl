@@ -1,0 +1,42 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+{{ define "updateOne" }}
+package api
+
+import (
+	"b3_ux_backend/internal/db"
+	"b3_ux_backend/internal/entities"
+	"b3_ux_backend/internal/server/core"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+)
+
+{{ range $node := $.Nodes }}
+func UpdateOne{{ $node.Name }}(ctx *gin.Context) {
+	type parameters struct {
+		Id uuid.UUID `json:"id"`
+		entities.{{ $node.Name }}UpdateOptions
+	}
+	var params parameters
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		core.HandleError(ctx, 400, "Could not bind parameters", err)
+		return
+	}
+
+	update := db.Client.{{ $node.Name }}.UpdateOneID(params.Id)
+	err := update.ApplyUpdateOptions(&params.{{ $node.Name }}UpdateOptions)
+	if err != nil {
+		core.HandleError(ctx, 400, "Could not apply update", err)
+		return
+	}
+
+	result, err := update.Save(ctx)
+	if err != nil {
+		core.HandleError(ctx, 400, "Could not update {{ $node.Name }}", err)
+		return
+	}
+
+	ctx.JSON(200, result.ToData())
+}
+{{ end }}
+{{ end }}

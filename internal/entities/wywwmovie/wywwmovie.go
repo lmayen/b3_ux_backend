@@ -23,10 +23,6 @@ const (
 	FieldContentRating = "content_rating"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// FieldPosterPath holds the string denoting the poster_path field in the database.
-	FieldPosterPath = "poster_path"
-	// FieldBannerPath holds the string denoting the banner_path field in the database.
-	FieldBannerPath = "banner_path"
 	// FieldReleasedYear holds the string denoting the released_year field in the database.
 	FieldReleasedYear = "released_year"
 	// FieldRuntime holds the string denoting the runtime field in the database.
@@ -35,6 +31,12 @@ const (
 	FieldRating = "rating"
 	// EdgeGenres holds the string denoting the genres edge name in mutations.
 	EdgeGenres = "genres"
+	// EdgeImages holds the string denoting the images edge name in mutations.
+	EdgeImages = "images"
+	// EdgeUserRecommendations holds the string denoting the user_recommendations edge name in mutations.
+	EdgeUserRecommendations = "user_recommendations"
+	// EdgeUserWatchlist holds the string denoting the user_watchlist edge name in mutations.
+	EdgeUserWatchlist = "user_watchlist"
 	// Table holds the table name of the wywwmovie in the database.
 	Table = "wyww_movies"
 	// GenresTable is the table that holds the genres relation/edge. The primary key declared below.
@@ -42,6 +44,23 @@ const (
 	// GenresInverseTable is the table name for the WywwGenre entity.
 	// It exists in this package in order to avoid circular dependency with the "wywwgenre" package.
 	GenresInverseTable = "wyww_genres"
+	// ImagesTable is the table that holds the images relation/edge.
+	ImagesTable = "images"
+	// ImagesInverseTable is the table name for the Image entity.
+	// It exists in this package in order to avoid circular dependency with the "image" package.
+	ImagesInverseTable = "images"
+	// ImagesColumn is the table column denoting the images relation/edge.
+	ImagesColumn = "wyww_movie_images"
+	// UserRecommendationsTable is the table that holds the user_recommendations relation/edge. The primary key declared below.
+	UserRecommendationsTable = "user_recommended_movies"
+	// UserRecommendationsInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserRecommendationsInverseTable = "users"
+	// UserWatchlistTable is the table that holds the user_watchlist relation/edge. The primary key declared below.
+	UserWatchlistTable = "user_watched_movies"
+	// UserWatchlistInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserWatchlistInverseTable = "users"
 )
 
 // Columns holds all SQL columns for wywwmovie fields.
@@ -51,8 +70,6 @@ var Columns = []string{
 	FieldOriginalTitle,
 	FieldContentRating,
 	FieldDescription,
-	FieldPosterPath,
-	FieldBannerPath,
 	FieldReleasedYear,
 	FieldRuntime,
 	FieldRating,
@@ -62,6 +79,12 @@ var (
 	// GenresPrimaryKey and GenresColumn2 are the table columns denoting the
 	// primary key for the genres relation (M2M).
 	GenresPrimaryKey = []string{"wyww_movie_id", "wyww_genre_id"}
+	// UserRecommendationsPrimaryKey and UserRecommendationsColumn2 are the table columns denoting the
+	// primary key for the user_recommendations relation (M2M).
+	UserRecommendationsPrimaryKey = []string{"user_id", "wyww_movie_id"}
+	// UserWatchlistPrimaryKey and UserWatchlistColumn2 are the table columns denoting the
+	// primary key for the user_watchlist relation (M2M).
+	UserWatchlistPrimaryKey = []string{"user_id", "wyww_movie_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -146,16 +169,6 @@ func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
-// ByPosterPath orders the results by the poster_path field.
-func ByPosterPath(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPosterPath, opts...).ToFunc()
-}
-
-// ByBannerPath orders the results by the banner_path field.
-func ByBannerPath(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBannerPath, opts...).ToFunc()
-}
-
 // ByReleasedYear orders the results by the released_year field.
 func ByReleasedYear(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldReleasedYear, opts...).ToFunc()
@@ -184,10 +197,73 @@ func ByGenres(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newGenresStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByImagesCount orders the results by images count.
+func ByImagesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newImagesStep(), opts...)
+	}
+}
+
+// ByImages orders the results by images terms.
+func ByImages(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newImagesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByUserRecommendationsCount orders the results by user_recommendations count.
+func ByUserRecommendationsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newUserRecommendationsStep(), opts...)
+	}
+}
+
+// ByUserRecommendations orders the results by user_recommendations terms.
+func ByUserRecommendations(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUserRecommendationsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByUserWatchlistCount orders the results by user_watchlist count.
+func ByUserWatchlistCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newUserWatchlistStep(), opts...)
+	}
+}
+
+// ByUserWatchlist orders the results by user_watchlist terms.
+func ByUserWatchlist(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUserWatchlistStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newGenresStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GenresInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, GenresTable, GenresPrimaryKey...),
+	)
+}
+func newImagesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ImagesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ImagesTable, ImagesColumn),
+	)
+}
+func newUserRecommendationsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UserRecommendationsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, UserRecommendationsTable, UserRecommendationsPrimaryKey...),
+	)
+}
+func newUserWatchlistStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UserWatchlistInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, UserWatchlistTable, UserWatchlistPrimaryKey...),
 	)
 }

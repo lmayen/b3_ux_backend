@@ -3,7 +3,9 @@
 package entities
 
 import (
+	"b3_ux_backend/internal/entities/image"
 	"b3_ux_backend/internal/entities/predicate"
+	"b3_ux_backend/internal/entities/user"
 	"b3_ux_backend/internal/entities/wywwgenre"
 	"b3_ux_backend/internal/entities/wywwmovie"
 	"context"
@@ -21,11 +23,14 @@ import (
 // WywwMovieQuery is the builder for querying WywwMovie entities.
 type WywwMovieQuery struct {
 	config
-	ctx        *QueryContext
-	order      []wywwmovie.OrderOption
-	inters     []Interceptor
-	predicates []predicate.WywwMovie
-	withGenres *WywwGenreQuery
+	ctx                     *QueryContext
+	order                   []wywwmovie.OrderOption
+	inters                  []Interceptor
+	predicates              []predicate.WywwMovie
+	withGenres              *WywwGenreQuery
+	withImages              *ImageQuery
+	withUserRecommendations *UserQuery
+	withUserWatchlist       *UserQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -77,6 +82,72 @@ func (_q *WywwMovieQuery) QueryGenres() *WywwGenreQuery {
 			sqlgraph.From(wywwmovie.Table, wywwmovie.FieldID, selector),
 			sqlgraph.To(wywwgenre.Table, wywwgenre.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, wywwmovie.GenresTable, wywwmovie.GenresPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryImages chains the current query on the "images" edge.
+func (_q *WywwMovieQuery) QueryImages() *ImageQuery {
+	query := (&ImageClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(wywwmovie.Table, wywwmovie.FieldID, selector),
+			sqlgraph.To(image.Table, image.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, wywwmovie.ImagesTable, wywwmovie.ImagesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryUserRecommendations chains the current query on the "user_recommendations" edge.
+func (_q *WywwMovieQuery) QueryUserRecommendations() *UserQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(wywwmovie.Table, wywwmovie.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, wywwmovie.UserRecommendationsTable, wywwmovie.UserRecommendationsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryUserWatchlist chains the current query on the "user_watchlist" edge.
+func (_q *WywwMovieQuery) QueryUserWatchlist() *UserQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(wywwmovie.Table, wywwmovie.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, wywwmovie.UserWatchlistTable, wywwmovie.UserWatchlistPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -271,12 +342,15 @@ func (_q *WywwMovieQuery) Clone() *WywwMovieQuery {
 		return nil
 	}
 	return &WywwMovieQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]wywwmovie.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.WywwMovie{}, _q.predicates...),
-		withGenres: _q.withGenres.Clone(),
+		config:                  _q.config,
+		ctx:                     _q.ctx.Clone(),
+		order:                   append([]wywwmovie.OrderOption{}, _q.order...),
+		inters:                  append([]Interceptor{}, _q.inters...),
+		predicates:              append([]predicate.WywwMovie{}, _q.predicates...),
+		withGenres:              _q.withGenres.Clone(),
+		withImages:              _q.withImages.Clone(),
+		withUserRecommendations: _q.withUserRecommendations.Clone(),
+		withUserWatchlist:       _q.withUserWatchlist.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -291,6 +365,39 @@ func (_q *WywwMovieQuery) WithGenres(opts ...func(*WywwGenreQuery)) *WywwMovieQu
 		opt(query)
 	}
 	_q.withGenres = query
+	return _q
+}
+
+// WithImages tells the query-builder to eager-load the nodes that are connected to
+// the "images" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *WywwMovieQuery) WithImages(opts ...func(*ImageQuery)) *WywwMovieQuery {
+	query := (&ImageClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withImages = query
+	return _q
+}
+
+// WithUserRecommendations tells the query-builder to eager-load the nodes that are connected to
+// the "user_recommendations" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *WywwMovieQuery) WithUserRecommendations(opts ...func(*UserQuery)) *WywwMovieQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withUserRecommendations = query
+	return _q
+}
+
+// WithUserWatchlist tells the query-builder to eager-load the nodes that are connected to
+// the "user_watchlist" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *WywwMovieQuery) WithUserWatchlist(opts ...func(*UserQuery)) *WywwMovieQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withUserWatchlist = query
 	return _q
 }
 
@@ -372,8 +479,11 @@ func (_q *WywwMovieQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Wy
 	var (
 		nodes       = []*WywwMovie{}
 		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [4]bool{
 			_q.withGenres != nil,
+			_q.withImages != nil,
+			_q.withUserRecommendations != nil,
+			_q.withUserWatchlist != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -398,6 +508,27 @@ func (_q *WywwMovieQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Wy
 		if err := _q.loadGenres(ctx, query, nodes,
 			func(n *WywwMovie) { n.Edges.Genres = []*WywwGenre{} },
 			func(n *WywwMovie, e *WywwGenre) { n.Edges.Genres = append(n.Edges.Genres, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withImages; query != nil {
+		if err := _q.loadImages(ctx, query, nodes,
+			func(n *WywwMovie) { n.Edges.Images = []*Image{} },
+			func(n *WywwMovie, e *Image) { n.Edges.Images = append(n.Edges.Images, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withUserRecommendations; query != nil {
+		if err := _q.loadUserRecommendations(ctx, query, nodes,
+			func(n *WywwMovie) { n.Edges.UserRecommendations = []*User{} },
+			func(n *WywwMovie, e *User) { n.Edges.UserRecommendations = append(n.Edges.UserRecommendations, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withUserWatchlist; query != nil {
+		if err := _q.loadUserWatchlist(ctx, query, nodes,
+			func(n *WywwMovie) { n.Edges.UserWatchlist = []*User{} },
+			func(n *WywwMovie, e *User) { n.Edges.UserWatchlist = append(n.Edges.UserWatchlist, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -458,6 +589,159 @@ func (_q *WywwMovieQuery) loadGenres(ctx context.Context, query *WywwGenreQuery,
 		nodes, ok := nids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected "genres" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (_q *WywwMovieQuery) loadImages(ctx context.Context, query *ImageQuery, nodes []*WywwMovie, init func(*WywwMovie), assign func(*WywwMovie, *Image)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*WywwMovie)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Image(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(wywwmovie.ImagesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.wyww_movie_images
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "wyww_movie_images" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "wyww_movie_images" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *WywwMovieQuery) loadUserRecommendations(ctx context.Context, query *UserQuery, nodes []*WywwMovie, init func(*WywwMovie), assign func(*WywwMovie, *User)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uuid.UUID]*WywwMovie)
+	nids := make(map[uuid.UUID]map[*WywwMovie]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(wywwmovie.UserRecommendationsTable)
+		s.Join(joinT).On(s.C(user.FieldID), joinT.C(wywwmovie.UserRecommendationsPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(wywwmovie.UserRecommendationsPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(wywwmovie.UserRecommendationsPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(uuid.UUID)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := *values[0].(*uuid.UUID)
+				inValue := *values[1].(*uuid.UUID)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*WywwMovie]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*User](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "user_recommendations" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (_q *WywwMovieQuery) loadUserWatchlist(ctx context.Context, query *UserQuery, nodes []*WywwMovie, init func(*WywwMovie), assign func(*WywwMovie, *User)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uuid.UUID]*WywwMovie)
+	nids := make(map[uuid.UUID]map[*WywwMovie]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(wywwmovie.UserWatchlistTable)
+		s.Join(joinT).On(s.C(user.FieldID), joinT.C(wywwmovie.UserWatchlistPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(wywwmovie.UserWatchlistPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(wywwmovie.UserWatchlistPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(uuid.UUID)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := *values[0].(*uuid.UUID)
+				inValue := *values[1].(*uuid.UUID)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*WywwMovie]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*User](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "user_watchlist" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

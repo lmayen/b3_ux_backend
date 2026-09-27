@@ -17,6 +17,7 @@ type AppConfig struct {
 	RootDir    string `json:"root_dir"`
 	LogDir     string `json:"log_dir"`
 	ImageDir   string `json:"image_dir"`
+	DataDir    string `json:"data_dir"`
 	SqlitePath string `json:"sqlite_path"`
 }
 
@@ -87,7 +88,7 @@ func (c *Config) Validate() error {
 }
 
 func InitConfig() (*Config, error) {
-	appName := "b3_ux_backend"
+	appName := "b3_ux"
 	root, err := fsutils.AppDir(appName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "InitConfig")
@@ -104,8 +105,14 @@ func InitConfig() (*Config, error) {
 		return nil, errors.Wrapf(err, "InitConfig")
 	}
 
-	imgDirectory := filepath.Join(root, "img")
+	imgDirectory := filepath.Join(root, "images")
 	err = fsutils.EnsureDir(imgDirectory)
+	if err != nil {
+		return nil, errors.Wrapf(err, "InitConfig")
+	}
+
+	dataDirectory := filepath.Join(root, "data")
+	err = fsutils.EnsureDir(dataDirectory)
 	if err != nil {
 		return nil, errors.Wrapf(err, "InitConfig")
 	}
@@ -119,6 +126,7 @@ func InitConfig() (*Config, error) {
 			RootDir:    root,
 			LogDir:     logDirectory,
 			ImageDir:   imgDirectory,
+			DataDir:    dataDirectory,
 			SqlitePath: sqlPath,
 		},
 		Database: DatabaseConfig{

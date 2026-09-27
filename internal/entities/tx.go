@@ -12,10 +12,18 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Color is the client for interacting with the Color builders.
+	Color *ColorClient
+	// Image is the client for interacting with the Image builders.
+	Image *ImageClient
+	// Session is the client for interacting with the Session builders.
+	Session *SessionClient
 	// StoreApp is the client for interacting with the StoreApp builders.
 	StoreApp *StoreAppClient
 	// StoreGenre is the client for interacting with the StoreGenre builders.
 	StoreGenre *StoreGenreClient
+	// User is the client for interacting with the User builders.
+	User *UserClient
 	// WywwGenre is the client for interacting with the WywwGenre builders.
 	WywwGenre *WywwGenreClient
 	// WywwMovie is the client for interacting with the WywwMovie builders.
@@ -151,8 +159,12 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Color = NewColorClient(tx.config)
+	tx.Image = NewImageClient(tx.config)
+	tx.Session = NewSessionClient(tx.config)
 	tx.StoreApp = NewStoreAppClient(tx.config)
 	tx.StoreGenre = NewStoreGenreClient(tx.config)
+	tx.User = NewUserClient(tx.config)
 	tx.WywwGenre = NewWywwGenreClient(tx.config)
 	tx.WywwMovie = NewWywwMovieClient(tx.config)
 }
@@ -164,7 +176,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: StoreApp.QueryXXX(), the query will be executed
+// applies a query, for example: Color.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

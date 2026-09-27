@@ -3,7 +3,9 @@
 package entities
 
 import (
+	"b3_ux_backend/internal/entities/image"
 	"b3_ux_backend/internal/entities/predicate"
+	"b3_ux_backend/internal/entities/user"
 	"b3_ux_backend/internal/entities/wywwgenre"
 	"b3_ux_backend/internal/entities/wywwmovie"
 	"context"
@@ -81,34 +83,6 @@ func (_u *WywwMovieUpdate) SetDescription(v string) *WywwMovieUpdate {
 func (_u *WywwMovieUpdate) SetNillableDescription(v *string) *WywwMovieUpdate {
 	if v != nil {
 		_u.SetDescription(*v)
-	}
-	return _u
-}
-
-// SetPosterPath sets the "poster_path" field.
-func (_u *WywwMovieUpdate) SetPosterPath(v string) *WywwMovieUpdate {
-	_u.mutation.SetPosterPath(v)
-	return _u
-}
-
-// SetNillablePosterPath sets the "poster_path" field if the given value is not nil.
-func (_u *WywwMovieUpdate) SetNillablePosterPath(v *string) *WywwMovieUpdate {
-	if v != nil {
-		_u.SetPosterPath(*v)
-	}
-	return _u
-}
-
-// SetBannerPath sets the "banner_path" field.
-func (_u *WywwMovieUpdate) SetBannerPath(v string) *WywwMovieUpdate {
-	_u.mutation.SetBannerPath(v)
-	return _u
-}
-
-// SetNillableBannerPath sets the "banner_path" field if the given value is not nil.
-func (_u *WywwMovieUpdate) SetNillableBannerPath(v *string) *WywwMovieUpdate {
-	if v != nil {
-		_u.SetBannerPath(*v)
 	}
 	return _u
 }
@@ -191,6 +165,51 @@ func (_u *WywwMovieUpdate) AddGenres(v ...*WywwGenre) *WywwMovieUpdate {
 	return _u.AddGenreIDs(ids...)
 }
 
+// AddImageIDs adds the "images" edge to the Image entity by IDs.
+func (_u *WywwMovieUpdate) AddImageIDs(ids ...uuid.UUID) *WywwMovieUpdate {
+	_u.mutation.AddImageIDs(ids...)
+	return _u
+}
+
+// AddImages adds the "images" edges to the Image entity.
+func (_u *WywwMovieUpdate) AddImages(v ...*Image) *WywwMovieUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddImageIDs(ids...)
+}
+
+// AddUserRecommendationIDs adds the "user_recommendations" edge to the User entity by IDs.
+func (_u *WywwMovieUpdate) AddUserRecommendationIDs(ids ...uuid.UUID) *WywwMovieUpdate {
+	_u.mutation.AddUserRecommendationIDs(ids...)
+	return _u
+}
+
+// AddUserRecommendations adds the "user_recommendations" edges to the User entity.
+func (_u *WywwMovieUpdate) AddUserRecommendations(v ...*User) *WywwMovieUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddUserRecommendationIDs(ids...)
+}
+
+// AddUserWatchlistIDs adds the "user_watchlist" edge to the User entity by IDs.
+func (_u *WywwMovieUpdate) AddUserWatchlistIDs(ids ...uuid.UUID) *WywwMovieUpdate {
+	_u.mutation.AddUserWatchlistIDs(ids...)
+	return _u
+}
+
+// AddUserWatchlist adds the "user_watchlist" edges to the User entity.
+func (_u *WywwMovieUpdate) AddUserWatchlist(v ...*User) *WywwMovieUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddUserWatchlistIDs(ids...)
+}
+
 // Mutation returns the WywwMovieMutation object of the builder.
 func (_u *WywwMovieUpdate) Mutation() *WywwMovieMutation {
 	return _u.mutation
@@ -215,6 +234,69 @@ func (_u *WywwMovieUpdate) RemoveGenres(v ...*WywwGenre) *WywwMovieUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveGenreIDs(ids...)
+}
+
+// ClearImages clears all "images" edges to the Image entity.
+func (_u *WywwMovieUpdate) ClearImages() *WywwMovieUpdate {
+	_u.mutation.ClearImages()
+	return _u
+}
+
+// RemoveImageIDs removes the "images" edge to Image entities by IDs.
+func (_u *WywwMovieUpdate) RemoveImageIDs(ids ...uuid.UUID) *WywwMovieUpdate {
+	_u.mutation.RemoveImageIDs(ids...)
+	return _u
+}
+
+// RemoveImages removes "images" edges to Image entities.
+func (_u *WywwMovieUpdate) RemoveImages(v ...*Image) *WywwMovieUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveImageIDs(ids...)
+}
+
+// ClearUserRecommendations clears all "user_recommendations" edges to the User entity.
+func (_u *WywwMovieUpdate) ClearUserRecommendations() *WywwMovieUpdate {
+	_u.mutation.ClearUserRecommendations()
+	return _u
+}
+
+// RemoveUserRecommendationIDs removes the "user_recommendations" edge to User entities by IDs.
+func (_u *WywwMovieUpdate) RemoveUserRecommendationIDs(ids ...uuid.UUID) *WywwMovieUpdate {
+	_u.mutation.RemoveUserRecommendationIDs(ids...)
+	return _u
+}
+
+// RemoveUserRecommendations removes "user_recommendations" edges to User entities.
+func (_u *WywwMovieUpdate) RemoveUserRecommendations(v ...*User) *WywwMovieUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveUserRecommendationIDs(ids...)
+}
+
+// ClearUserWatchlist clears all "user_watchlist" edges to the User entity.
+func (_u *WywwMovieUpdate) ClearUserWatchlist() *WywwMovieUpdate {
+	_u.mutation.ClearUserWatchlist()
+	return _u
+}
+
+// RemoveUserWatchlistIDs removes the "user_watchlist" edge to User entities by IDs.
+func (_u *WywwMovieUpdate) RemoveUserWatchlistIDs(ids ...uuid.UUID) *WywwMovieUpdate {
+	_u.mutation.RemoveUserWatchlistIDs(ids...)
+	return _u
+}
+
+// RemoveUserWatchlist removes "user_watchlist" edges to User entities.
+func (_u *WywwMovieUpdate) RemoveUserWatchlist(v ...*User) *WywwMovieUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveUserWatchlistIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -303,12 +385,6 @@ func (_u *WywwMovieUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(wywwmovie.FieldDescription, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.PosterPath(); ok {
-		_spec.SetField(wywwmovie.FieldPosterPath, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.BannerPath(); ok {
-		_spec.SetField(wywwmovie.FieldBannerPath, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.ReleasedYear(); ok {
 		_spec.SetField(wywwmovie.FieldReleasedYear, field.TypeInt32, value)
 	}
@@ -365,6 +441,141 @@ func (_u *WywwMovieUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(wywwgenre.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ImagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   wywwmovie.ImagesTable,
+			Columns: []string{wywwmovie.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedImagesIDs(); len(nodes) > 0 && !_u.mutation.ImagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   wywwmovie.ImagesTable,
+			Columns: []string{wywwmovie.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ImagesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   wywwmovie.ImagesTable,
+			Columns: []string{wywwmovie.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.UserRecommendationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserRecommendationsTable,
+			Columns: wywwmovie.UserRecommendationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedUserRecommendationsIDs(); len(nodes) > 0 && !_u.mutation.UserRecommendationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserRecommendationsTable,
+			Columns: wywwmovie.UserRecommendationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserRecommendationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserRecommendationsTable,
+			Columns: wywwmovie.UserRecommendationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.UserWatchlistCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserWatchlistTable,
+			Columns: wywwmovie.UserWatchlistPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedUserWatchlistIDs(); len(nodes) > 0 && !_u.mutation.UserWatchlistCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserWatchlistTable,
+			Columns: wywwmovie.UserWatchlistPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserWatchlistIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserWatchlistTable,
+			Columns: wywwmovie.UserWatchlistPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -448,34 +659,6 @@ func (_u *WywwMovieUpdateOne) SetNillableDescription(v *string) *WywwMovieUpdate
 	return _u
 }
 
-// SetPosterPath sets the "poster_path" field.
-func (_u *WywwMovieUpdateOne) SetPosterPath(v string) *WywwMovieUpdateOne {
-	_u.mutation.SetPosterPath(v)
-	return _u
-}
-
-// SetNillablePosterPath sets the "poster_path" field if the given value is not nil.
-func (_u *WywwMovieUpdateOne) SetNillablePosterPath(v *string) *WywwMovieUpdateOne {
-	if v != nil {
-		_u.SetPosterPath(*v)
-	}
-	return _u
-}
-
-// SetBannerPath sets the "banner_path" field.
-func (_u *WywwMovieUpdateOne) SetBannerPath(v string) *WywwMovieUpdateOne {
-	_u.mutation.SetBannerPath(v)
-	return _u
-}
-
-// SetNillableBannerPath sets the "banner_path" field if the given value is not nil.
-func (_u *WywwMovieUpdateOne) SetNillableBannerPath(v *string) *WywwMovieUpdateOne {
-	if v != nil {
-		_u.SetBannerPath(*v)
-	}
-	return _u
-}
-
 // SetReleasedYear sets the "released_year" field.
 func (_u *WywwMovieUpdateOne) SetReleasedYear(v int32) *WywwMovieUpdateOne {
 	_u.mutation.ResetReleasedYear()
@@ -554,6 +737,51 @@ func (_u *WywwMovieUpdateOne) AddGenres(v ...*WywwGenre) *WywwMovieUpdateOne {
 	return _u.AddGenreIDs(ids...)
 }
 
+// AddImageIDs adds the "images" edge to the Image entity by IDs.
+func (_u *WywwMovieUpdateOne) AddImageIDs(ids ...uuid.UUID) *WywwMovieUpdateOne {
+	_u.mutation.AddImageIDs(ids...)
+	return _u
+}
+
+// AddImages adds the "images" edges to the Image entity.
+func (_u *WywwMovieUpdateOne) AddImages(v ...*Image) *WywwMovieUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddImageIDs(ids...)
+}
+
+// AddUserRecommendationIDs adds the "user_recommendations" edge to the User entity by IDs.
+func (_u *WywwMovieUpdateOne) AddUserRecommendationIDs(ids ...uuid.UUID) *WywwMovieUpdateOne {
+	_u.mutation.AddUserRecommendationIDs(ids...)
+	return _u
+}
+
+// AddUserRecommendations adds the "user_recommendations" edges to the User entity.
+func (_u *WywwMovieUpdateOne) AddUserRecommendations(v ...*User) *WywwMovieUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddUserRecommendationIDs(ids...)
+}
+
+// AddUserWatchlistIDs adds the "user_watchlist" edge to the User entity by IDs.
+func (_u *WywwMovieUpdateOne) AddUserWatchlistIDs(ids ...uuid.UUID) *WywwMovieUpdateOne {
+	_u.mutation.AddUserWatchlistIDs(ids...)
+	return _u
+}
+
+// AddUserWatchlist adds the "user_watchlist" edges to the User entity.
+func (_u *WywwMovieUpdateOne) AddUserWatchlist(v ...*User) *WywwMovieUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddUserWatchlistIDs(ids...)
+}
+
 // Mutation returns the WywwMovieMutation object of the builder.
 func (_u *WywwMovieUpdateOne) Mutation() *WywwMovieMutation {
 	return _u.mutation
@@ -578,6 +806,69 @@ func (_u *WywwMovieUpdateOne) RemoveGenres(v ...*WywwGenre) *WywwMovieUpdateOne 
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveGenreIDs(ids...)
+}
+
+// ClearImages clears all "images" edges to the Image entity.
+func (_u *WywwMovieUpdateOne) ClearImages() *WywwMovieUpdateOne {
+	_u.mutation.ClearImages()
+	return _u
+}
+
+// RemoveImageIDs removes the "images" edge to Image entities by IDs.
+func (_u *WywwMovieUpdateOne) RemoveImageIDs(ids ...uuid.UUID) *WywwMovieUpdateOne {
+	_u.mutation.RemoveImageIDs(ids...)
+	return _u
+}
+
+// RemoveImages removes "images" edges to Image entities.
+func (_u *WywwMovieUpdateOne) RemoveImages(v ...*Image) *WywwMovieUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveImageIDs(ids...)
+}
+
+// ClearUserRecommendations clears all "user_recommendations" edges to the User entity.
+func (_u *WywwMovieUpdateOne) ClearUserRecommendations() *WywwMovieUpdateOne {
+	_u.mutation.ClearUserRecommendations()
+	return _u
+}
+
+// RemoveUserRecommendationIDs removes the "user_recommendations" edge to User entities by IDs.
+func (_u *WywwMovieUpdateOne) RemoveUserRecommendationIDs(ids ...uuid.UUID) *WywwMovieUpdateOne {
+	_u.mutation.RemoveUserRecommendationIDs(ids...)
+	return _u
+}
+
+// RemoveUserRecommendations removes "user_recommendations" edges to User entities.
+func (_u *WywwMovieUpdateOne) RemoveUserRecommendations(v ...*User) *WywwMovieUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveUserRecommendationIDs(ids...)
+}
+
+// ClearUserWatchlist clears all "user_watchlist" edges to the User entity.
+func (_u *WywwMovieUpdateOne) ClearUserWatchlist() *WywwMovieUpdateOne {
+	_u.mutation.ClearUserWatchlist()
+	return _u
+}
+
+// RemoveUserWatchlistIDs removes the "user_watchlist" edge to User entities by IDs.
+func (_u *WywwMovieUpdateOne) RemoveUserWatchlistIDs(ids ...uuid.UUID) *WywwMovieUpdateOne {
+	_u.mutation.RemoveUserWatchlistIDs(ids...)
+	return _u
+}
+
+// RemoveUserWatchlist removes "user_watchlist" edges to User entities.
+func (_u *WywwMovieUpdateOne) RemoveUserWatchlist(v ...*User) *WywwMovieUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveUserWatchlistIDs(ids...)
 }
 
 // Where appends a list predicates to the WywwMovieUpdate builder.
@@ -696,12 +987,6 @@ func (_u *WywwMovieUpdateOne) sqlSave(ctx context.Context) (_node *WywwMovie, er
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(wywwmovie.FieldDescription, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.PosterPath(); ok {
-		_spec.SetField(wywwmovie.FieldPosterPath, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.BannerPath(); ok {
-		_spec.SetField(wywwmovie.FieldBannerPath, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.ReleasedYear(); ok {
 		_spec.SetField(wywwmovie.FieldReleasedYear, field.TypeInt32, value)
 	}
@@ -758,6 +1043,141 @@ func (_u *WywwMovieUpdateOne) sqlSave(ctx context.Context) (_node *WywwMovie, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(wywwgenre.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ImagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   wywwmovie.ImagesTable,
+			Columns: []string{wywwmovie.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedImagesIDs(); len(nodes) > 0 && !_u.mutation.ImagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   wywwmovie.ImagesTable,
+			Columns: []string{wywwmovie.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ImagesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   wywwmovie.ImagesTable,
+			Columns: []string{wywwmovie.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.UserRecommendationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserRecommendationsTable,
+			Columns: wywwmovie.UserRecommendationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedUserRecommendationsIDs(); len(nodes) > 0 && !_u.mutation.UserRecommendationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserRecommendationsTable,
+			Columns: wywwmovie.UserRecommendationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserRecommendationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserRecommendationsTable,
+			Columns: wywwmovie.UserRecommendationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.UserWatchlistCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserWatchlistTable,
+			Columns: wywwmovie.UserWatchlistPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedUserWatchlistIDs(); len(nodes) > 0 && !_u.mutation.UserWatchlistCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserWatchlistTable,
+			Columns: wywwmovie.UserWatchlistPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserWatchlistIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserWatchlistTable,
+			Columns: wywwmovie.UserWatchlistPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

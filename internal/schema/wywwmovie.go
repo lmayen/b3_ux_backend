@@ -37,10 +37,6 @@ func (WywwMovie) Fields() []ent.Field {
 
 		field.String("description").NotEmpty(),
 
-		field.String("poster_path").Nillable(),
-
-		field.String("banner_path").Nillable(),
-
 		field.Int32("released_year").NonNegative(),
 
 		field.Int32("runtime").NonNegative(),
@@ -53,5 +49,12 @@ func (WywwMovie) Fields() []ent.Field {
 func (WywwMovie) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("genres", WywwGenre.Type),
+		edge.To("images", Image.Type),
+
+		edge.From("user_recommendations", User.Type).
+			Ref("recommended_movies"),
+
+		edge.From("user_watchlist", User.Type).
+			Ref("watched_movies"),
 	}
 }

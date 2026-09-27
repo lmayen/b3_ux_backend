@@ -93,6 +93,17 @@ IDE hint only. No effect on generation.
     
     {{ if $field.IsJSON }}
     {{ end }}
+
+    {{ range $enum := $field.Enums }}
+        {{ $enum.Name }}
+        {{ $enum.Value }}
+    {{ end }}
+
+    {{ $field.Immutable }}
+{{ end }}
+
+{{ range $field := $node.MutableFields }}
+    ...
 {{ end }}
 
 ```
@@ -116,6 +127,10 @@ IDE hint only. No effect on generation.
     {{ $edge.O2M }}
     {{ $edge.M2O }}
     {{ $edge.M2M }}
+
+    {{ if not $edge.IsInverse }}
+        ...
+    {{ end }}
 {{ end }}
 ```
 
@@ -271,4 +286,9 @@ func generateAsset(graph *gen.Graph, asset assetTemplate) error {
 
 	return nil
 }
+```
+
+And to execute:
+```
+go run -mod=mod ./internal/entgen/entc.go
 ```

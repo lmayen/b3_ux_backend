@@ -53,9 +53,13 @@ type StoreApp struct {
 type StoreAppEdges struct {
 	// Genres holds the value of the genres edge.
 	Genres []*StoreGenre `json:"genres,omitempty"`
+	// Images holds the value of the images edge.
+	Images []*Image `json:"images,omitempty"`
+	// UserInstallList holds the value of the user_install_list edge.
+	UserInstallList []*User `json:"user_install_list,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [3]bool
 }
 
 // GenresOrErr returns the Genres value or an error if the edge
@@ -65,6 +69,24 @@ func (e StoreAppEdges) GenresOrErr() ([]*StoreGenre, error) {
 		return e.Genres, nil
 	}
 	return nil, &NotLoadedError{edge: "genres"}
+}
+
+// ImagesOrErr returns the Images value or an error if the edge
+// was not loaded in eager-loading.
+func (e StoreAppEdges) ImagesOrErr() ([]*Image, error) {
+	if e.loadedTypes[1] {
+		return e.Images, nil
+	}
+	return nil, &NotLoadedError{edge: "images"}
+}
+
+// UserInstallListOrErr returns the UserInstallList value or an error if the edge
+// was not loaded in eager-loading.
+func (e StoreAppEdges) UserInstallListOrErr() ([]*User, error) {
+	if e.loadedTypes[2] {
+		return e.UserInstallList, nil
+	}
+	return nil, &NotLoadedError{edge: "user_install_list"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -198,6 +220,16 @@ func (_m *StoreApp) Value(name string) (ent.Value, error) {
 // QueryGenres queries the "genres" edge of the StoreApp entity.
 func (_m *StoreApp) QueryGenres() *StoreGenreQuery {
 	return NewStoreAppClient(_m.config).QueryGenres(_m)
+}
+
+// QueryImages queries the "images" edge of the StoreApp entity.
+func (_m *StoreApp) QueryImages() *ImageQuery {
+	return NewStoreAppClient(_m.config).QueryImages(_m)
+}
+
+// QueryUserInstallList queries the "user_install_list" edge of the StoreApp entity.
+func (_m *StoreApp) QueryUserInstallList() *UserQuery {
+	return NewStoreAppClient(_m.config).QueryUserInstallList(_m)
 }
 
 // Update returns a builder for updating this StoreApp.

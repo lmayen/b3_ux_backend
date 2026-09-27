@@ -90,5 +90,9 @@ func (StoreApp) Fields() []ent.Field {
 func (StoreApp) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("genres", StoreGenre.Type),
+		edge.To("images", Image.Type),
+
+		edge.From("user_install_list", User.Type).
+			Ref("installed_apps"),
 	}
 }

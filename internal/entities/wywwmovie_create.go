@@ -3,6 +3,8 @@
 package entities
 
 import (
+	"b3_ux_backend/internal/entities/image"
+	"b3_ux_backend/internal/entities/user"
 	"b3_ux_backend/internal/entities/wywwgenre"
 	"b3_ux_backend/internal/entities/wywwmovie"
 	"context"
@@ -42,18 +44,6 @@ func (_c *WywwMovieCreate) SetContentRating(v wywwmovie.ContentRating) *WywwMovi
 // SetDescription sets the "description" field.
 func (_c *WywwMovieCreate) SetDescription(v string) *WywwMovieCreate {
 	_c.mutation.SetDescription(v)
-	return _c
-}
-
-// SetPosterPath sets the "poster_path" field.
-func (_c *WywwMovieCreate) SetPosterPath(v string) *WywwMovieCreate {
-	_c.mutation.SetPosterPath(v)
-	return _c
-}
-
-// SetBannerPath sets the "banner_path" field.
-func (_c *WywwMovieCreate) SetBannerPath(v string) *WywwMovieCreate {
-	_c.mutation.SetBannerPath(v)
 	return _c
 }
 
@@ -102,6 +92,51 @@ func (_c *WywwMovieCreate) AddGenres(v ...*WywwGenre) *WywwMovieCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddGenreIDs(ids...)
+}
+
+// AddImageIDs adds the "images" edge to the Image entity by IDs.
+func (_c *WywwMovieCreate) AddImageIDs(ids ...uuid.UUID) *WywwMovieCreate {
+	_c.mutation.AddImageIDs(ids...)
+	return _c
+}
+
+// AddImages adds the "images" edges to the Image entity.
+func (_c *WywwMovieCreate) AddImages(v ...*Image) *WywwMovieCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddImageIDs(ids...)
+}
+
+// AddUserRecommendationIDs adds the "user_recommendations" edge to the User entity by IDs.
+func (_c *WywwMovieCreate) AddUserRecommendationIDs(ids ...uuid.UUID) *WywwMovieCreate {
+	_c.mutation.AddUserRecommendationIDs(ids...)
+	return _c
+}
+
+// AddUserRecommendations adds the "user_recommendations" edges to the User entity.
+func (_c *WywwMovieCreate) AddUserRecommendations(v ...*User) *WywwMovieCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddUserRecommendationIDs(ids...)
+}
+
+// AddUserWatchlistIDs adds the "user_watchlist" edge to the User entity by IDs.
+func (_c *WywwMovieCreate) AddUserWatchlistIDs(ids ...uuid.UUID) *WywwMovieCreate {
+	_c.mutation.AddUserWatchlistIDs(ids...)
+	return _c
+}
+
+// AddUserWatchlist adds the "user_watchlist" edges to the User entity.
+func (_c *WywwMovieCreate) AddUserWatchlist(v ...*User) *WywwMovieCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddUserWatchlistIDs(ids...)
 }
 
 // Mutation returns the WywwMovieMutation object of the builder.
@@ -179,12 +214,6 @@ func (_c *WywwMovieCreate) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`entities: validator failed for field "WywwMovie.description": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.PosterPath(); !ok {
-		return &ValidationError{Name: "poster_path", err: errors.New(`entities: missing required field "WywwMovie.poster_path"`)}
-	}
-	if _, ok := _c.mutation.BannerPath(); !ok {
-		return &ValidationError{Name: "banner_path", err: errors.New(`entities: missing required field "WywwMovie.banner_path"`)}
-	}
 	if _, ok := _c.mutation.ReleasedYear(); !ok {
 		return &ValidationError{Name: "released_year", err: errors.New(`entities: missing required field "WywwMovie.released_year"`)}
 	}
@@ -255,14 +284,6 @@ func (_c *WywwMovieCreate) createSpec() (*WywwMovie, *sqlgraph.CreateSpec) {
 		_spec.SetField(wywwmovie.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
-	if value, ok := _c.mutation.PosterPath(); ok {
-		_spec.SetField(wywwmovie.FieldPosterPath, field.TypeString, value)
-		_node.PosterPath = &value
-	}
-	if value, ok := _c.mutation.BannerPath(); ok {
-		_spec.SetField(wywwmovie.FieldBannerPath, field.TypeString, value)
-		_node.BannerPath = &value
-	}
 	if value, ok := _c.mutation.ReleasedYear(); ok {
 		_spec.SetField(wywwmovie.FieldReleasedYear, field.TypeInt32, value)
 		_node.ReleasedYear = value
@@ -284,6 +305,54 @@ func (_c *WywwMovieCreate) createSpec() (*WywwMovie, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(wywwgenre.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ImagesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   wywwmovie.ImagesTable,
+			Columns: []string{wywwmovie.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.UserRecommendationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserRecommendationsTable,
+			Columns: wywwmovie.UserRecommendationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.UserWatchlistIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   wywwmovie.UserWatchlistTable,
+			Columns: wywwmovie.UserWatchlistPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

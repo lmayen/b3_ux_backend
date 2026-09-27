@@ -703,6 +703,52 @@ func HasGenresWith(preds ...predicate.StoreGenre) predicate.StoreApp {
 	})
 }
 
+// HasImages applies the HasEdge predicate on the "images" edge.
+func HasImages() predicate.StoreApp {
+	return predicate.StoreApp(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ImagesTable, ImagesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasImagesWith applies the HasEdge predicate on the "images" edge with a given conditions (other predicates).
+func HasImagesWith(preds ...predicate.Image) predicate.StoreApp {
+	return predicate.StoreApp(func(s *sql.Selector) {
+		step := newImagesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasUserInstallList applies the HasEdge predicate on the "user_install_list" edge.
+func HasUserInstallList() predicate.StoreApp {
+	return predicate.StoreApp(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, UserInstallListTable, UserInstallListPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUserInstallListWith applies the HasEdge predicate on the "user_install_list" edge with a given conditions (other predicates).
+func HasUserInstallListWith(preds ...predicate.User) predicate.StoreApp {
+	return predicate.StoreApp(func(s *sql.Selector) {
+		step := newUserInstallListStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.StoreApp) predicate.StoreApp {
 	return predicate.StoreApp(sql.AndPredicates(predicates...))

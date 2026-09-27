@@ -1,6 +1,6 @@
 {{/* gotype: entgo.io/ent/entc/gen.Graph */}}
 
-{{ define "filteringHelpers" }}
+{{ define "utils_filtering" }}
 
 {{ template "header" $ }}
 
@@ -61,7 +61,7 @@ func (q *{{ $node.QueryName }}) ApplyFilterOptions(filters []FilterItem) error {
 func build{{ $node.Name }}FilterPredicate(path []string, operator FilterOperator, raw json.RawMessage) (FilterPredicate, error) {
     if len(path) == 1 {
         switch path[0] {
-        {{ if $node.ID }}
+        {{ if and $node.ID $node.ID.IsUUID }}
         case "id":
             switch operator {
                 case EqFilterOperator:
@@ -99,6 +99,7 @@ func build{{ $node.Name }}FilterPredicate(path []string, operator FilterOperator
         {{ end}}
 
         {{ range $field := $node.Fields }}
+        {{ if not $field.IsJSON }}
         case "{{ $field.Name }}":
             switch operator {
             case EqFilterOperator:
@@ -169,6 +170,7 @@ func build{{ $node.Name }}FilterPredicate(path []string, operator FilterOperator
                 return FilterPredicate({{ $node.Package  }}.{{ $field.StructField }}GTE(value)), nil
             {{ end }}
             }
+        {{ end }}
         {{ end }}
         }
     }

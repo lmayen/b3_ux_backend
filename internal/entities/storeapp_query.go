@@ -3,9 +3,11 @@
 package entities
 
 import (
+	"b3_ux_backend/internal/entities/image"
 	"b3_ux_backend/internal/entities/predicate"
 	"b3_ux_backend/internal/entities/storeapp"
 	"b3_ux_backend/internal/entities/storegenre"
+	"b3_ux_backend/internal/entities/user"
 	"context"
 	"database/sql/driver"
 	"fmt"
@@ -21,11 +23,13 @@ import (
 // StoreAppQuery is the builder for querying StoreApp entities.
 type StoreAppQuery struct {
 	config
-	ctx        *QueryContext
-	order      []storeapp.OrderOption
-	inters     []Interceptor
-	predicates []predicate.StoreApp
-	withGenres *StoreGenreQuery
+	ctx                 *QueryContext
+	order               []storeapp.OrderOption
+	inters              []Interceptor
+	predicates          []predicate.StoreApp
+	withGenres          *StoreGenreQuery
+	withImages          *ImageQuery
+	withUserInstallList *UserQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -77,6 +81,50 @@ func (_q *StoreAppQuery) QueryGenres() *StoreGenreQuery {
 			sqlgraph.From(storeapp.Table, storeapp.FieldID, selector),
 			sqlgraph.To(storegenre.Table, storegenre.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, storeapp.GenresTable, storeapp.GenresPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryImages chains the current query on the "images" edge.
+func (_q *StoreAppQuery) QueryImages() *ImageQuery {
+	query := (&ImageClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(storeapp.Table, storeapp.FieldID, selector),
+			sqlgraph.To(image.Table, image.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, storeapp.ImagesTable, storeapp.ImagesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryUserInstallList chains the current query on the "user_install_list" edge.
+func (_q *StoreAppQuery) QueryUserInstallList() *UserQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(storeapp.Table, storeapp.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, storeapp.UserInstallListTable, storeapp.UserInstallListPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -271,12 +319,14 @@ func (_q *StoreAppQuery) Clone() *StoreAppQuery {
 		return nil
 	}
 	return &StoreAppQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]storeapp.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.StoreApp{}, _q.predicates...),
-		withGenres: _q.withGenres.Clone(),
+		config:              _q.config,
+		ctx:                 _q.ctx.Clone(),
+		order:               append([]storeapp.OrderOption{}, _q.order...),
+		inters:              append([]Interceptor{}, _q.inters...),
+		predicates:          append([]predicate.StoreApp{}, _q.predicates...),
+		withGenres:          _q.withGenres.Clone(),
+		withImages:          _q.withImages.Clone(),
+		withUserInstallList: _q.withUserInstallList.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -291,6 +341,28 @@ func (_q *StoreAppQuery) WithGenres(opts ...func(*StoreGenreQuery)) *StoreAppQue
 		opt(query)
 	}
 	_q.withGenres = query
+	return _q
+}
+
+// WithImages tells the query-builder to eager-load the nodes that are connected to
+// the "images" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *StoreAppQuery) WithImages(opts ...func(*ImageQuery)) *StoreAppQuery {
+	query := (&ImageClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withImages = query
+	return _q
+}
+
+// WithUserInstallList tells the query-builder to eager-load the nodes that are connected to
+// the "user_install_list" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *StoreAppQuery) WithUserInstallList(opts ...func(*UserQuery)) *StoreAppQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withUserInstallList = query
 	return _q
 }
 
@@ -372,8 +444,10 @@ func (_q *StoreAppQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sto
 	var (
 		nodes       = []*StoreApp{}
 		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [3]bool{
 			_q.withGenres != nil,
+			_q.withImages != nil,
+			_q.withUserInstallList != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -398,6 +472,20 @@ func (_q *StoreAppQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sto
 		if err := _q.loadGenres(ctx, query, nodes,
 			func(n *StoreApp) { n.Edges.Genres = []*StoreGenre{} },
 			func(n *StoreApp, e *StoreGenre) { n.Edges.Genres = append(n.Edges.Genres, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withImages; query != nil {
+		if err := _q.loadImages(ctx, query, nodes,
+			func(n *StoreApp) { n.Edges.Images = []*Image{} },
+			func(n *StoreApp, e *Image) { n.Edges.Images = append(n.Edges.Images, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withUserInstallList; query != nil {
+		if err := _q.loadUserInstallList(ctx, query, nodes,
+			func(n *StoreApp) { n.Edges.UserInstallList = []*User{} },
+			func(n *StoreApp, e *User) { n.Edges.UserInstallList = append(n.Edges.UserInstallList, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -458,6 +546,98 @@ func (_q *StoreAppQuery) loadGenres(ctx context.Context, query *StoreGenreQuery,
 		nodes, ok := nids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected "genres" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (_q *StoreAppQuery) loadImages(ctx context.Context, query *ImageQuery, nodes []*StoreApp, init func(*StoreApp), assign func(*StoreApp, *Image)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*StoreApp)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Image(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(storeapp.ImagesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.store_app_images
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "store_app_images" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "store_app_images" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *StoreAppQuery) loadUserInstallList(ctx context.Context, query *UserQuery, nodes []*StoreApp, init func(*StoreApp), assign func(*StoreApp, *User)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uuid.UUID]*StoreApp)
+	nids := make(map[uuid.UUID]map[*StoreApp]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(storeapp.UserInstallListTable)
+		s.Join(joinT).On(s.C(user.FieldID), joinT.C(storeapp.UserInstallListPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(storeapp.UserInstallListPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(storeapp.UserInstallListPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(uuid.UUID)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := *values[0].(*uuid.UUID)
+				inValue := *values[1].(*uuid.UUID)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*StoreApp]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*User](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "user_install_list" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

@@ -2,15 +2,18 @@ package db
 
 import (
 	"b3_ux_backend/internal/entities"
+	"b3_ux_backend/internal/entities/image"
 	"b3_ux_backend/internal/entities/storeapp"
 	"b3_ux_backend/internal/entities/wywwmovie"
 	"b3_ux_backend/internal/fsutils"
+	"b3_ux_backend/internal/imageUtils"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 
 	"entgo.io/ent/dialect"
@@ -25,7 +28,7 @@ func CreateAppEntities() {
 	ctx := context.Background()
 	var err error
 
-	appName := "b3_ux_sqlite"
+	appName := "b3_ux"
 	appDir, err := fsutils.AppDir(appName)
 	if err != nil {
 		panic(err)
@@ -172,13 +175,17 @@ func createWywwEntities(ctx context.Context, client *entities.Client) error {
 
 	// Add apps to database
 	var movieCreateBulk []*entities.WywwMovieCreate
+	var imageCreateBulk []*entities.ImageCreate
+	var colorCreateBulk []*entities.ColorCreate
 	for _, v := range appData {
-		cr, err := v.TxCreate(tx, genres)
+		movCreate, imgCreates, colorCreates, err := v.TxCreate(tx, genres)
 		if err != nil {
-			return errors.Wrapf(err, "createWywwEntities create movie failed")
+			return errors.Wrapf(err, "createWywwEntities parse movie data failed")
 		}
 
-		movieCreateBulk = append(movieCreateBulk, cr)
+		movieCreateBulk = append(movieCreateBulk, movCreate)
+		imageCreateBulk = append(imageCreateBulk, imgCreates...)
+		colorCreateBulk = append(colorCreateBulk, colorCreates...)
 	}
 
 	err = bulkCreateBatched(
@@ -195,6 +202,38 @@ func createWywwEntities(ctx context.Context, client *entities.Client) error {
 	)
 	if err != nil {
 		return errors.Wrapf(err, "createWywwEntities batch insertion of movies to db failed")
+	}
+
+	err = bulkCreateBatched(
+		imageCreateBulk,
+		100,
+		func(batch []*entities.ImageCreate) error {
+			_, err := tx.Image.CreateBulk(batch...).Save(ctx)
+			if err != nil {
+				return errors.Wrapf(err, "image insertion of movies to db failed")
+			}
+
+			return nil
+		},
+	)
+	if err != nil {
+		return errors.Wrapf(err, "image batch insertion of movies to db failed")
+	}
+
+	err = bulkCreateBatched(
+		colorCreateBulk,
+		100,
+		func(batch []*entities.ColorCreate) error {
+			_, err := tx.Color.CreateBulk(batch...).Save(ctx)
+			if err != nil {
+				return errors.Wrapf(err, "color insertion of movies to db failed")
+			}
+
+			return nil
+		},
+	)
+	if err != nil {
+		return errors.Wrapf(err, "color batch insertion of movies to db failed")
 	}
 
 	//  Commit transaction
@@ -257,11 +296,8 @@ func (a *appJsonData) TxCreate(tx *entities.Tx, genres []*entities.StoreGenre) (
 
 	var genreIds []uuid.UUID
 	for _, entity := range genres {
-		for _, g := range a.Genres {
-			if entity.Name == g {
-				genreIds = append(genreIds, entity.ID)
-				break
-			}
+		if slices.Contains(a.Genres, entity.Name) {
+			genreIds = append(genreIds, entity.ID)
 		}
 	}
 
@@ -433,51 +469,116 @@ type movieJsonData struct {
 	OriginalTitle string   `json:"original_title"`
 	Type          string   `json:"type"`
 	Genres        []string `json:"genres"`
-	Poster        string   `json:"poster"`
-	Thumbnail     string   `json:"thumbnail"`
+	PosterPath    *string  `json:"poster_path"`
+	BannerPath    *string  `json:"banner_path"`
 	ReleasedYear  string   `json:"released_year"`
-	Runtime       string   `json:"runtime"`
+	Runtime       int32    `json:"runtime"`
 	Rating        float32  `json:"rating"`
 }
 
-func (m *movieJsonData) TxCreate(tx *entities.Tx, genres []*entities.WywwGenre) (*entities.WywwMovieCreate, error) {
+func (m *movieJsonData) TxCreate(tx *entities.Tx, genres []*entities.WywwGenre) (*entities.WywwMovieCreate, []*entities.ImageCreate, []*entities.ColorCreate, error) {
 	rating, err := contentRatingFromString(m.ContentRating)
 	if err != nil {
-		return nil, err
+		return nil, nil, nil, errors.Wrapf(err, "invalid content rating")
 	}
 
 	i64, err := strconv.ParseInt(m.ReleasedYear, 10, 32)
 	if err != nil {
-		return nil, errors.New("invalid released_year")
+		return nil, nil, nil, errors.New("invalid released_year")
 	}
 	year := int32(i64)
 
-	result := tx.WywwMovie.Create().
+	movieId := uuid.New()
+	bannerImagerId := uuid.New()
+	posterImagerId := uuid.New()
+
+	var imageResults []*entities.ImageCreate
+	var colorResults []*entities.ColorCreate
+
+	if m.PosterPath != nil && *m.PosterPath != "" {
+		poster, err := imageUtils.EvalImageRepr(*m.PosterPath, 3)
+		if err != nil {
+			return nil, nil, nil, errors.Wrapf(err, "could not evaluate poster image representation: %s", *m.PosterPath)
+		}
+
+		imageResults = append(
+			imageResults,
+			tx.Image.Create().
+				SetID(posterImagerId).
+				SetMovieID(movieId).
+				SetKind(image.KindPoster).
+				SetFilename(filepath.Base(*m.PosterPath)).
+				SetPath(fmt.Sprintf("./images/%s", filepath.Base(*m.PosterPath))).
+				SetWidth(poster.Width).
+				SetHeight(poster.Height),
+		)
+
+		for _, color := range poster.Colors {
+			colorResults = append(
+				colorResults,
+				tx.Color.Create().
+					SetImageID(posterImagerId).
+					SetR(color.R).
+					SetG(color.G).
+					SetB(color.B).
+					SetRatio(color.Ratio),
+			)
+		}
+	}
+
+	if m.BannerPath != nil && *m.BannerPath != "" {
+		banner, err := imageUtils.EvalImageRepr(*m.BannerPath, 3)
+		if err != nil {
+			return nil, nil, nil, errors.Wrapf(err, "could not evaluate banner image representation: %s", *m.BannerPath)
+		}
+
+		imageResults = append(
+			imageResults,
+			tx.Image.Create().
+				SetID(bannerImagerId).
+				SetMovieID(movieId).
+				SetKind(image.KindBanner).
+				SetFilename(filepath.Base(*m.BannerPath)).
+				SetPath(fmt.Sprintf("./images/%s", filepath.Base(*m.BannerPath))).
+				SetWidth(banner.Width).
+				SetHeight(banner.Height),
+		)
+
+		for _, color := range banner.Colors {
+			colorResults = append(
+				colorResults,
+				tx.Color.Create().
+					SetImageID(bannerImagerId).
+					SetR(color.R).
+					SetG(color.G).
+					SetB(color.B).
+					SetRatio(color.Ratio),
+			)
+		}
+	}
+
+	movieResult := tx.WywwMovie.Create().
+		SetID(movieId).
 		SetMovieTitle(m.MovieTitle).
 		SetOriginalTitle(m.OriginalTitle).
 		SetContentRating(rating).
 		SetDescription(m.Description).
-		SetPoster(m.Poster).
-		SetThumbnail(m.Thumbnail).
 		SetReleasedYear(year).
 		SetRuntime(m.Runtime).
 		SetRating(m.Rating)
 
 	var genreIds []uuid.UUID
 	for _, entity := range genres {
-		for _, g := range m.Genres {
-			if entity.Name == g {
-				genreIds = append(genreIds, entity.ID)
-				break
-			}
+		if slices.Contains(m.Genres, entity.Name) {
+			genreIds = append(genreIds, entity.ID)
 		}
 	}
 
 	if len(genreIds) > 0 {
-		result.AddGenreIDs(genreIds...)
+		movieResult.AddGenreIDs(genreIds...)
 	}
 
-	return result, nil
+	return movieResult, imageResults, colorResults, nil
 }
 
 func contentRatingFromString(value string) (wywwmovie.ContentRating, error) {

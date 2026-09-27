@@ -8,6 +8,42 @@ import (
 	"fmt"
 )
 
+// The ColorFunc type is an adapter to allow the use of ordinary
+// function as Color mutator.
+type ColorFunc func(context.Context, *entities.ColorMutation) (entities.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ColorFunc) Mutate(ctx context.Context, m entities.Mutation) (entities.Value, error) {
+	if mv, ok := m.(*entities.ColorMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *entities.ColorMutation", m)
+}
+
+// The ImageFunc type is an adapter to allow the use of ordinary
+// function as Image mutator.
+type ImageFunc func(context.Context, *entities.ImageMutation) (entities.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ImageFunc) Mutate(ctx context.Context, m entities.Mutation) (entities.Value, error) {
+	if mv, ok := m.(*entities.ImageMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *entities.ImageMutation", m)
+}
+
+// The SessionFunc type is an adapter to allow the use of ordinary
+// function as Session mutator.
+type SessionFunc func(context.Context, *entities.SessionMutation) (entities.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SessionFunc) Mutate(ctx context.Context, m entities.Mutation) (entities.Value, error) {
+	if mv, ok := m.(*entities.SessionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *entities.SessionMutation", m)
+}
+
 // The StoreAppFunc type is an adapter to allow the use of ordinary
 // function as StoreApp mutator.
 type StoreAppFunc func(context.Context, *entities.StoreAppMutation) (entities.Value, error)
@@ -30,6 +66,18 @@ func (f StoreGenreFunc) Mutate(ctx context.Context, m entities.Mutation) (entiti
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *entities.StoreGenreMutation", m)
+}
+
+// The UserFunc type is an adapter to allow the use of ordinary
+// function as User mutator.
+type UserFunc func(context.Context, *entities.UserMutation) (entities.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserFunc) Mutate(ctx context.Context, m entities.Mutation) (entities.Value, error) {
+	if mv, ok := m.(*entities.UserMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *entities.UserMutation", m)
 }
 
 // The WywwGenreFunc type is an adapter to allow the use of ordinary

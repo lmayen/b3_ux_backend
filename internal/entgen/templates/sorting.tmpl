@@ -1,6 +1,6 @@
 {{/* gotype: entgo.io/ent/entc/gen.Graph */}}
 
-{{ define "sortingHelpers" }}
+{{ define "utils_sorting" }}
 
 {{ template "header" $ }}
 
@@ -20,8 +20,8 @@ const (
 )
 
 type SortOptions struct {
-	SortField string        `json:"sortField" form:"sortField"`
-	SortOrder SortDirection `json:"sortOrder" form:"sortOrder"`
+	SortField     string        `json:"sort_field" form:"sort_field"`
+	SortDirection SortDirection `json:"sort_direction" form:"sort_direction"`
 }
 
 func (s SortDirection) TermOption() sql.OrderTermOption {
@@ -35,17 +35,19 @@ func (s SortDirection) TermOption() sql.OrderTermOption {
 
 {{ range $node := $.Nodes }}
 
-func (q *{{ $node.QueryName }}) ApplySortingOptions(options SortOptions) *{{ $node.QueryName }} {
+func (q *{{ $node.QueryName }}) ApplySortingOptions(options *SortOptions) *{{ $node.QueryName }} {
     switch options.SortField {
 
     {{ if $node.ID }}
     case "id":
-        q.Order({{ $node.Package }}.ByID(options.SortOrder.TermOption()))
+        q.Order({{ $node.Package }}.ByID(options.SortDirection.TermOption()))
     {{ end }}
 
     {{ range $field := $node.Fields }}
+    {{ if not $field.IsJSON }}
     case "{{ $field.Name }}":
-        q.Order({{ $node.Package }}.By{{ $field.StructField  }}(options.SortOrder.TermOption()))
+        q.Order({{ $node.Package }}.By{{ $field.StructField  }}(options.SortDirection.TermOption()))
+    {{ end }}
     {{ end }}
     {{ if $node.ID }}
     default:

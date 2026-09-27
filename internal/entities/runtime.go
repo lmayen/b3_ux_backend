@@ -3,11 +3,16 @@
 package entities
 
 import (
+	"b3_ux_backend/internal/entities/color"
+	"b3_ux_backend/internal/entities/image"
+	"b3_ux_backend/internal/entities/session"
 	"b3_ux_backend/internal/entities/storeapp"
 	"b3_ux_backend/internal/entities/storegenre"
+	"b3_ux_backend/internal/entities/user"
 	"b3_ux_backend/internal/entities/wywwgenre"
 	"b3_ux_backend/internal/entities/wywwmovie"
 	"b3_ux_backend/internal/schema"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -16,6 +21,120 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	colorFields := schema.Color{}.Fields()
+	_ = colorFields
+	// colorDescR is the schema descriptor for r field.
+	colorDescR := colorFields[1].Descriptor()
+	// color.RValidator is a validator for the "r" field. It is called by the builders before save.
+	color.RValidator = func() func(int) error {
+		validators := colorDescR.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(r int) error {
+			for _, fn := range fns {
+				if err := fn(r); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// colorDescG is the schema descriptor for g field.
+	colorDescG := colorFields[2].Descriptor()
+	// color.GValidator is a validator for the "g" field. It is called by the builders before save.
+	color.GValidator = func() func(int) error {
+		validators := colorDescG.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(g int) error {
+			for _, fn := range fns {
+				if err := fn(g); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// colorDescB is the schema descriptor for b field.
+	colorDescB := colorFields[3].Descriptor()
+	// color.BValidator is a validator for the "b" field. It is called by the builders before save.
+	color.BValidator = func() func(int) error {
+		validators := colorDescB.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(b int) error {
+			for _, fn := range fns {
+				if err := fn(b); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// colorDescRatio is the schema descriptor for ratio field.
+	colorDescRatio := colorFields[4].Descriptor()
+	// color.RatioValidator is a validator for the "ratio" field. It is called by the builders before save.
+	color.RatioValidator = func() func(float32) error {
+		validators := colorDescRatio.Validators
+		fns := [...]func(float32) error{
+			validators[0].(func(float32) error),
+			validators[1].(func(float32) error),
+		}
+		return func(ratio float32) error {
+			for _, fn := range fns {
+				if err := fn(ratio); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// colorDescID is the schema descriptor for id field.
+	colorDescID := colorFields[0].Descriptor()
+	// color.DefaultID holds the default value on creation for the id field.
+	color.DefaultID = colorDescID.Default.(func() uuid.UUID)
+	imageFields := schema.Image{}.Fields()
+	_ = imageFields
+	// imageDescFilename is the schema descriptor for filename field.
+	imageDescFilename := imageFields[1].Descriptor()
+	// image.FilenameValidator is a validator for the "filename" field. It is called by the builders before save.
+	image.FilenameValidator = imageDescFilename.Validators[0].(func(string) error)
+	// imageDescPath is the schema descriptor for path field.
+	imageDescPath := imageFields[2].Descriptor()
+	// image.PathValidator is a validator for the "path" field. It is called by the builders before save.
+	image.PathValidator = imageDescPath.Validators[0].(func(string) error)
+	// imageDescWidth is the schema descriptor for width field.
+	imageDescWidth := imageFields[3].Descriptor()
+	// image.WidthValidator is a validator for the "width" field. It is called by the builders before save.
+	image.WidthValidator = imageDescWidth.Validators[0].(func(int) error)
+	// imageDescHeight is the schema descriptor for height field.
+	imageDescHeight := imageFields[4].Descriptor()
+	// image.HeightValidator is a validator for the "height" field. It is called by the builders before save.
+	image.HeightValidator = imageDescHeight.Validators[0].(func(int) error)
+	// imageDescID is the schema descriptor for id field.
+	imageDescID := imageFields[0].Descriptor()
+	// image.DefaultID holds the default value on creation for the id field.
+	image.DefaultID = imageDescID.Default.(func() uuid.UUID)
+	sessionFields := schema.Session{}.Fields()
+	_ = sessionFields
+	// sessionDescCreatedAt is the schema descriptor for created_at field.
+	sessionDescCreatedAt := sessionFields[2].Descriptor()
+	// session.DefaultCreatedAt holds the default value on creation for the created_at field.
+	session.DefaultCreatedAt = sessionDescCreatedAt.Default.(func() time.Time)
+	// sessionDescExpiresAt is the schema descriptor for expires_at field.
+	sessionDescExpiresAt := sessionFields[3].Descriptor()
+	// session.DefaultExpiresAt holds the default value on creation for the expires_at field.
+	session.DefaultExpiresAt = sessionDescExpiresAt.Default.(func() time.Time)
+	// sessionDescID is the schema descriptor for id field.
+	sessionDescID := sessionFields[0].Descriptor()
+	// session.DefaultID holds the default value on creation for the id field.
+	session.DefaultID = sessionDescID.Default.(func() uuid.UUID)
 	storeappFields := schema.StoreApp{}.Fields()
 	_ = storeappFields
 	// storeappDescName is the schema descriptor for name field.
@@ -66,6 +185,12 @@ func init() {
 	storegenreDescID := storegenreFields[0].Descriptor()
 	// storegenre.DefaultID holds the default value on creation for the id field.
 	storegenre.DefaultID = storegenreDescID.Default.(func() uuid.UUID)
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescID is the schema descriptor for id field.
+	userDescID := userFields[0].Descriptor()
+	// user.DefaultID holds the default value on creation for the id field.
+	user.DefaultID = userDescID.Default.(func() uuid.UUID)
 	wywwgenreFields := schema.WywwGenre{}.Fields()
 	_ = wywwgenreFields
 	// wywwgenreDescName is the schema descriptor for name field.
@@ -91,11 +216,11 @@ func init() {
 	// wywwmovie.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	wywwmovie.DescriptionValidator = wywwmovieDescDescription.Validators[0].(func(string) error)
 	// wywwmovieDescReleasedYear is the schema descriptor for released_year field.
-	wywwmovieDescReleasedYear := wywwmovieFields[7].Descriptor()
+	wywwmovieDescReleasedYear := wywwmovieFields[5].Descriptor()
 	// wywwmovie.ReleasedYearValidator is a validator for the "released_year" field. It is called by the builders before save.
 	wywwmovie.ReleasedYearValidator = wywwmovieDescReleasedYear.Validators[0].(func(int32) error)
 	// wywwmovieDescRuntime is the schema descriptor for runtime field.
-	wywwmovieDescRuntime := wywwmovieFields[8].Descriptor()
+	wywwmovieDescRuntime := wywwmovieFields[6].Descriptor()
 	// wywwmovie.RuntimeValidator is a validator for the "runtime" field. It is called by the builders before save.
 	wywwmovie.RuntimeValidator = wywwmovieDescRuntime.Validators[0].(func(int32) error)
 	// wywwmovieDescID is the schema descriptor for id field.

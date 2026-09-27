@@ -1,0 +1,36 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "update" }}
+
+{{- range $node := $.Nodes }}
+{{- range $field := $node.Fields }}
+{{- if $field.IsEnum }}
+import { {{ $node.Name }}{{ $field.StructField }}Enum } from "./data";
+{{ end -}}
+{{ end -}}
+{{ end }}
+
+export interface UpdateField<T> {
+	present: boolean,
+	value:   T,
+}
+
+{{ range $node := $.Nodes }}
+export interface {{ $node.Name }}UpdateParameters {
+    {{ range $field := $node.MutableFields }}
+    {{- $public := true }}
+    {{- with $access := $field.Annotations.Access }}{{ $public = not $access.Private }}{{ end }}
+    {{- if $public }}
+    {{- if or $field.Type.Type.Integer $field.Type.Type.Float }}{{ $field.Name }}?: UpdateField<number{{ if $field.Nillable }}|null{{ end }}>,{{ end }}
+    {{- if $field.IsString }}{{ $field.Name }}?: UpdateField<string{{ if $field.Nillable }}|null{{ end }}>,{{ end }}
+    {{- if $field.IsBool }}{{ $field.Name }}?: UpdateField<boolean{{ if $field.Nillable }}|null{{ end }}>,{{ end }}
+    {{- if $field.IsTime }}{{ $field.Name }}?: UpdateField<string{{ if $field.Nillable }}|null{{ end }}>,{{ end }}
+    {{- if $field.IsUUID }}{{ $field.Name }}?: UpdateField<string{{ if $field.Nillable }}|null{{ end }}>,{{ end }}
+    {{- if $field.IsEnum }}{{ $field.Name }}?: UpdateField<{{ $node.Name }}{{ $field.StructField }}Enum{{ if $field.Nillable }}|null{{ end }}>,{{ end }}
+    {{- if $field.IsJSON }}{{ $field.Name }}?: UpdateField<object{{ if $field.Nillable }}|null{{ end }}>,{{ end }}
+    {{ end -}}
+    {{ end -}}
+}
+{{ end }}
+
+{{ end }}

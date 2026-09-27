@@ -25,10 +25,6 @@ type WywwMovie struct {
 	ContentRating wywwmovie.ContentRating `json:"content_rating,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
-	// PosterPath holds the value of the "poster_path" field.
-	PosterPath *string `json:"poster_path,omitempty"`
-	// BannerPath holds the value of the "banner_path" field.
-	BannerPath *string `json:"banner_path,omitempty"`
 	// ReleasedYear holds the value of the "released_year" field.
 	ReleasedYear int32 `json:"released_year,omitempty"`
 	// Runtime holds the value of the "runtime" field.
@@ -45,9 +41,15 @@ type WywwMovie struct {
 type WywwMovieEdges struct {
 	// Genres holds the value of the genres edge.
 	Genres []*WywwGenre `json:"genres,omitempty"`
+	// Images holds the value of the images edge.
+	Images []*Image `json:"images,omitempty"`
+	// UserRecommendations holds the value of the user_recommendations edge.
+	UserRecommendations []*User `json:"user_recommendations,omitempty"`
+	// UserWatchlist holds the value of the user_watchlist edge.
+	UserWatchlist []*User `json:"user_watchlist,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [4]bool
 }
 
 // GenresOrErr returns the Genres value or an error if the edge
@@ -59,6 +61,33 @@ func (e WywwMovieEdges) GenresOrErr() ([]*WywwGenre, error) {
 	return nil, &NotLoadedError{edge: "genres"}
 }
 
+// ImagesOrErr returns the Images value or an error if the edge
+// was not loaded in eager-loading.
+func (e WywwMovieEdges) ImagesOrErr() ([]*Image, error) {
+	if e.loadedTypes[1] {
+		return e.Images, nil
+	}
+	return nil, &NotLoadedError{edge: "images"}
+}
+
+// UserRecommendationsOrErr returns the UserRecommendations value or an error if the edge
+// was not loaded in eager-loading.
+func (e WywwMovieEdges) UserRecommendationsOrErr() ([]*User, error) {
+	if e.loadedTypes[2] {
+		return e.UserRecommendations, nil
+	}
+	return nil, &NotLoadedError{edge: "user_recommendations"}
+}
+
+// UserWatchlistOrErr returns the UserWatchlist value or an error if the edge
+// was not loaded in eager-loading.
+func (e WywwMovieEdges) UserWatchlistOrErr() ([]*User, error) {
+	if e.loadedTypes[3] {
+		return e.UserWatchlist, nil
+	}
+	return nil, &NotLoadedError{edge: "user_watchlist"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*WywwMovie) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -68,7 +97,7 @@ func (*WywwMovie) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case wywwmovie.FieldReleasedYear, wywwmovie.FieldRuntime:
 			values[i] = new(sql.NullInt64)
-		case wywwmovie.FieldMovieTitle, wywwmovie.FieldOriginalTitle, wywwmovie.FieldContentRating, wywwmovie.FieldDescription, wywwmovie.FieldPosterPath, wywwmovie.FieldBannerPath:
+		case wywwmovie.FieldMovieTitle, wywwmovie.FieldOriginalTitle, wywwmovie.FieldContentRating, wywwmovie.FieldDescription:
 			values[i] = new(sql.NullString)
 		case wywwmovie.FieldID:
 			values[i] = new(uuid.UUID)
@@ -117,20 +146,6 @@ func (_m *WywwMovie) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Description = value.String
 			}
-		case wywwmovie.FieldPosterPath:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field poster_path", values[i])
-			} else if value.Valid {
-				_m.PosterPath = new(string)
-				*_m.PosterPath = value.String
-			}
-		case wywwmovie.FieldBannerPath:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field banner_path", values[i])
-			} else if value.Valid {
-				_m.BannerPath = new(string)
-				*_m.BannerPath = value.String
-			}
 		case wywwmovie.FieldReleasedYear:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field released_year", values[i])
@@ -167,6 +182,21 @@ func (_m *WywwMovie) QueryGenres() *WywwGenreQuery {
 	return NewWywwMovieClient(_m.config).QueryGenres(_m)
 }
 
+// QueryImages queries the "images" edge of the WywwMovie entity.
+func (_m *WywwMovie) QueryImages() *ImageQuery {
+	return NewWywwMovieClient(_m.config).QueryImages(_m)
+}
+
+// QueryUserRecommendations queries the "user_recommendations" edge of the WywwMovie entity.
+func (_m *WywwMovie) QueryUserRecommendations() *UserQuery {
+	return NewWywwMovieClient(_m.config).QueryUserRecommendations(_m)
+}
+
+// QueryUserWatchlist queries the "user_watchlist" edge of the WywwMovie entity.
+func (_m *WywwMovie) QueryUserWatchlist() *UserQuery {
+	return NewWywwMovieClient(_m.config).QueryUserWatchlist(_m)
+}
+
 // Update returns a builder for updating this WywwMovie.
 // Note that you need to call WywwMovie.Unwrap() before calling this method if this WywwMovie
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -201,16 +231,6 @@ func (_m *WywwMovie) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(_m.Description)
-	builder.WriteString(", ")
-	if v := _m.PosterPath; v != nil {
-		builder.WriteString("poster_path=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.BannerPath; v != nil {
-		builder.WriteString("banner_path=")
-		builder.WriteString(*v)
-	}
 	builder.WriteString(", ")
 	builder.WriteString("released_year=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ReleasedYear))

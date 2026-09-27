@@ -3,8 +3,10 @@
 package entities
 
 import (
+	"b3_ux_backend/internal/entities/image"
 	"b3_ux_backend/internal/entities/storeapp"
 	"b3_ux_backend/internal/entities/storegenre"
+	"b3_ux_backend/internal/entities/user"
 	"context"
 	"errors"
 	"fmt"
@@ -134,6 +136,36 @@ func (_c *StoreAppCreate) AddGenres(v ...*StoreGenre) *StoreAppCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddGenreIDs(ids...)
+}
+
+// AddImageIDs adds the "images" edge to the Image entity by IDs.
+func (_c *StoreAppCreate) AddImageIDs(ids ...uuid.UUID) *StoreAppCreate {
+	_c.mutation.AddImageIDs(ids...)
+	return _c
+}
+
+// AddImages adds the "images" edges to the Image entity.
+func (_c *StoreAppCreate) AddImages(v ...*Image) *StoreAppCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddImageIDs(ids...)
+}
+
+// AddUserInstallListIDs adds the "user_install_list" edge to the User entity by IDs.
+func (_c *StoreAppCreate) AddUserInstallListIDs(ids ...uuid.UUID) *StoreAppCreate {
+	_c.mutation.AddUserInstallListIDs(ids...)
+	return _c
+}
+
+// AddUserInstallList adds the "user_install_list" edges to the User entity.
+func (_c *StoreAppCreate) AddUserInstallList(v ...*User) *StoreAppCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddUserInstallListIDs(ids...)
 }
 
 // Mutation returns the StoreAppMutation object of the builder.
@@ -368,6 +400,38 @@ func (_c *StoreAppCreate) createSpec() (*StoreApp, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(storegenre.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ImagesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   storeapp.ImagesTable,
+			Columns: []string{storeapp.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.UserInstallListIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   storeapp.UserInstallListTable,
+			Columns: storeapp.UserInstallListPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

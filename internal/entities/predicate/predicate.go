@@ -6,11 +6,23 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Color is the predicate function for color builders.
+type Color func(*sql.Selector)
+
+// Image is the predicate function for image builders.
+type Image func(*sql.Selector)
+
+// Session is the predicate function for session builders.
+type Session func(*sql.Selector)
+
 // StoreApp is the predicate function for storeapp builders.
 type StoreApp func(*sql.Selector)
 
 // StoreGenre is the predicate function for storegenre builders.
 type StoreGenre func(*sql.Selector)
+
+// User is the predicate function for user builders.
+type User func(*sql.Selector)
 
 // WywwGenre is the predicate function for wywwgenre builders.
 type WywwGenre func(*sql.Selector)

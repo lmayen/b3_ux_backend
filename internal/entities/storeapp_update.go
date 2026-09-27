@@ -3,9 +3,11 @@
 package entities
 
 import (
+	"b3_ux_backend/internal/entities/image"
 	"b3_ux_backend/internal/entities/predicate"
 	"b3_ux_backend/internal/entities/storeapp"
 	"b3_ux_backend/internal/entities/storegenre"
+	"b3_ux_backend/internal/entities/user"
 	"context"
 	"errors"
 	"fmt"
@@ -247,6 +249,36 @@ func (_u *StoreAppUpdate) AddGenres(v ...*StoreGenre) *StoreAppUpdate {
 	return _u.AddGenreIDs(ids...)
 }
 
+// AddImageIDs adds the "images" edge to the Image entity by IDs.
+func (_u *StoreAppUpdate) AddImageIDs(ids ...uuid.UUID) *StoreAppUpdate {
+	_u.mutation.AddImageIDs(ids...)
+	return _u
+}
+
+// AddImages adds the "images" edges to the Image entity.
+func (_u *StoreAppUpdate) AddImages(v ...*Image) *StoreAppUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddImageIDs(ids...)
+}
+
+// AddUserInstallListIDs adds the "user_install_list" edge to the User entity by IDs.
+func (_u *StoreAppUpdate) AddUserInstallListIDs(ids ...uuid.UUID) *StoreAppUpdate {
+	_u.mutation.AddUserInstallListIDs(ids...)
+	return _u
+}
+
+// AddUserInstallList adds the "user_install_list" edges to the User entity.
+func (_u *StoreAppUpdate) AddUserInstallList(v ...*User) *StoreAppUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddUserInstallListIDs(ids...)
+}
+
 // Mutation returns the StoreAppMutation object of the builder.
 func (_u *StoreAppUpdate) Mutation() *StoreAppMutation {
 	return _u.mutation
@@ -271,6 +303,48 @@ func (_u *StoreAppUpdate) RemoveGenres(v ...*StoreGenre) *StoreAppUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveGenreIDs(ids...)
+}
+
+// ClearImages clears all "images" edges to the Image entity.
+func (_u *StoreAppUpdate) ClearImages() *StoreAppUpdate {
+	_u.mutation.ClearImages()
+	return _u
+}
+
+// RemoveImageIDs removes the "images" edge to Image entities by IDs.
+func (_u *StoreAppUpdate) RemoveImageIDs(ids ...uuid.UUID) *StoreAppUpdate {
+	_u.mutation.RemoveImageIDs(ids...)
+	return _u
+}
+
+// RemoveImages removes "images" edges to Image entities.
+func (_u *StoreAppUpdate) RemoveImages(v ...*Image) *StoreAppUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveImageIDs(ids...)
+}
+
+// ClearUserInstallList clears all "user_install_list" edges to the User entity.
+func (_u *StoreAppUpdate) ClearUserInstallList() *StoreAppUpdate {
+	_u.mutation.ClearUserInstallList()
+	return _u
+}
+
+// RemoveUserInstallListIDs removes the "user_install_list" edge to User entities by IDs.
+func (_u *StoreAppUpdate) RemoveUserInstallListIDs(ids ...uuid.UUID) *StoreAppUpdate {
+	_u.mutation.RemoveUserInstallListIDs(ids...)
+	return _u
+}
+
+// RemoveUserInstallList removes "user_install_list" edges to User entities.
+func (_u *StoreAppUpdate) RemoveUserInstallList(v ...*User) *StoreAppUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveUserInstallListIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -453,6 +527,96 @@ func (_u *StoreAppUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(storegenre.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ImagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   storeapp.ImagesTable,
+			Columns: []string{storeapp.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedImagesIDs(); len(nodes) > 0 && !_u.mutation.ImagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   storeapp.ImagesTable,
+			Columns: []string{storeapp.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ImagesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   storeapp.ImagesTable,
+			Columns: []string{storeapp.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.UserInstallListCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   storeapp.UserInstallListTable,
+			Columns: storeapp.UserInstallListPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedUserInstallListIDs(); len(nodes) > 0 && !_u.mutation.UserInstallListCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   storeapp.UserInstallListTable,
+			Columns: storeapp.UserInstallListPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserInstallListIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   storeapp.UserInstallListTable,
+			Columns: storeapp.UserInstallListPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -698,6 +862,36 @@ func (_u *StoreAppUpdateOne) AddGenres(v ...*StoreGenre) *StoreAppUpdateOne {
 	return _u.AddGenreIDs(ids...)
 }
 
+// AddImageIDs adds the "images" edge to the Image entity by IDs.
+func (_u *StoreAppUpdateOne) AddImageIDs(ids ...uuid.UUID) *StoreAppUpdateOne {
+	_u.mutation.AddImageIDs(ids...)
+	return _u
+}
+
+// AddImages adds the "images" edges to the Image entity.
+func (_u *StoreAppUpdateOne) AddImages(v ...*Image) *StoreAppUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddImageIDs(ids...)
+}
+
+// AddUserInstallListIDs adds the "user_install_list" edge to the User entity by IDs.
+func (_u *StoreAppUpdateOne) AddUserInstallListIDs(ids ...uuid.UUID) *StoreAppUpdateOne {
+	_u.mutation.AddUserInstallListIDs(ids...)
+	return _u
+}
+
+// AddUserInstallList adds the "user_install_list" edges to the User entity.
+func (_u *StoreAppUpdateOne) AddUserInstallList(v ...*User) *StoreAppUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddUserInstallListIDs(ids...)
+}
+
 // Mutation returns the StoreAppMutation object of the builder.
 func (_u *StoreAppUpdateOne) Mutation() *StoreAppMutation {
 	return _u.mutation
@@ -722,6 +916,48 @@ func (_u *StoreAppUpdateOne) RemoveGenres(v ...*StoreGenre) *StoreAppUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveGenreIDs(ids...)
+}
+
+// ClearImages clears all "images" edges to the Image entity.
+func (_u *StoreAppUpdateOne) ClearImages() *StoreAppUpdateOne {
+	_u.mutation.ClearImages()
+	return _u
+}
+
+// RemoveImageIDs removes the "images" edge to Image entities by IDs.
+func (_u *StoreAppUpdateOne) RemoveImageIDs(ids ...uuid.UUID) *StoreAppUpdateOne {
+	_u.mutation.RemoveImageIDs(ids...)
+	return _u
+}
+
+// RemoveImages removes "images" edges to Image entities.
+func (_u *StoreAppUpdateOne) RemoveImages(v ...*Image) *StoreAppUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveImageIDs(ids...)
+}
+
+// ClearUserInstallList clears all "user_install_list" edges to the User entity.
+func (_u *StoreAppUpdateOne) ClearUserInstallList() *StoreAppUpdateOne {
+	_u.mutation.ClearUserInstallList()
+	return _u
+}
+
+// RemoveUserInstallListIDs removes the "user_install_list" edge to User entities by IDs.
+func (_u *StoreAppUpdateOne) RemoveUserInstallListIDs(ids ...uuid.UUID) *StoreAppUpdateOne {
+	_u.mutation.RemoveUserInstallListIDs(ids...)
+	return _u
+}
+
+// RemoveUserInstallList removes "user_install_list" edges to User entities.
+func (_u *StoreAppUpdateOne) RemoveUserInstallList(v ...*User) *StoreAppUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveUserInstallListIDs(ids...)
 }
 
 // Where appends a list predicates to the StoreAppUpdate builder.
@@ -934,6 +1170,96 @@ func (_u *StoreAppUpdateOne) sqlSave(ctx context.Context) (_node *StoreApp, err 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(storegenre.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ImagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   storeapp.ImagesTable,
+			Columns: []string{storeapp.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedImagesIDs(); len(nodes) > 0 && !_u.mutation.ImagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   storeapp.ImagesTable,
+			Columns: []string{storeapp.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ImagesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   storeapp.ImagesTable,
+			Columns: []string{storeapp.ImagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(image.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.UserInstallListCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   storeapp.UserInstallListTable,
+			Columns: storeapp.UserInstallListPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedUserInstallListIDs(); len(nodes) > 0 && !_u.mutation.UserInstallListCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   storeapp.UserInstallListTable,
+			Columns: storeapp.UserInstallListPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserInstallListIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   storeapp.UserInstallListTable,
+			Columns: storeapp.UserInstallListPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

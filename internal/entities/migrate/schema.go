@@ -8,6 +8,82 @@ import (
 )
 
 var (
+	// ColorsColumns holds the columns for the "colors" table.
+	ColorsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "r", Type: field.TypeInt},
+		{Name: "g", Type: field.TypeInt},
+		{Name: "b", Type: field.TypeInt},
+		{Name: "ratio", Type: field.TypeFloat32},
+		{Name: "image_colors", Type: field.TypeUUID, Nullable: true},
+	}
+	// ColorsTable holds the schema information for the "colors" table.
+	ColorsTable = &schema.Table{
+		Name:       "colors",
+		Columns:    ColorsColumns,
+		PrimaryKey: []*schema.Column{ColorsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "colors_images_colors",
+				Columns:    []*schema.Column{ColorsColumns[5]},
+				RefColumns: []*schema.Column{ImagesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// ImagesColumns holds the columns for the "images" table.
+	ImagesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "filename", Type: field.TypeString, Unique: true},
+		{Name: "path", Type: field.TypeString, Unique: true},
+		{Name: "width", Type: field.TypeInt},
+		{Name: "height", Type: field.TypeInt},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"poster", "banner", "icon"}},
+		{Name: "store_app_images", Type: field.TypeUUID, Nullable: true},
+		{Name: "wyww_movie_images", Type: field.TypeUUID, Nullable: true},
+	}
+	// ImagesTable holds the schema information for the "images" table.
+	ImagesTable = &schema.Table{
+		Name:       "images",
+		Columns:    ImagesColumns,
+		PrimaryKey: []*schema.Column{ImagesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "images_store_apps_images",
+				Columns:    []*schema.Column{ImagesColumns[6]},
+				RefColumns: []*schema.Column{StoreAppsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "images_wyww_movies_images",
+				Columns:    []*schema.Column{ImagesColumns[7]},
+				RefColumns: []*schema.Column{WywwMoviesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// SessionsColumns holds the columns for the "sessions" table.
+	SessionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "token", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "user_sessions", Type: field.TypeUUID},
+	}
+	// SessionsTable holds the schema information for the "sessions" table.
+	SessionsTable = &schema.Table{
+		Name:       "sessions",
+		Columns:    SessionsColumns,
+		PrimaryKey: []*schema.Column{SessionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sessions_users_sessions",
+				Columns:    []*schema.Column{SessionsColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// StoreAppsColumns holds the columns for the "store_apps" table.
 	StoreAppsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -42,6 +118,20 @@ var (
 		Columns:    StoreGenresColumns,
 		PrimaryKey: []*schema.Column{StoreGenresColumns[0]},
 	}
+	// UsersColumns holds the columns for the "users" table.
+	UsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "username", Type: field.TypeString, Unique: true},
+		{Name: "is_admin", Type: field.TypeBool},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "password", Type: field.TypeString},
+	}
+	// UsersTable holds the schema information for the "users" table.
+	UsersTable = &schema.Table{
+		Name:       "users",
+		Columns:    UsersColumns,
+		PrimaryKey: []*schema.Column{UsersColumns[0]},
+	}
 	// WywwGenresColumns holds the columns for the "wyww_genres" table.
 	WywwGenresColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -60,8 +150,6 @@ var (
 		{Name: "original_title", Type: field.TypeString},
 		{Name: "content_rating", Type: field.TypeEnum, Enums: []string{"Approved", "G", "NC-17", "Not Rated", "PG", "PG-13", "Passed", "R"}},
 		{Name: "description", Type: field.TypeString},
-		{Name: "poster_path", Type: field.TypeString},
-		{Name: "banner_path", Type: field.TypeString},
 		{Name: "released_year", Type: field.TypeInt32},
 		{Name: "runtime", Type: field.TypeInt32},
 		{Name: "rating", Type: field.TypeFloat32},
@@ -97,6 +185,81 @@ var (
 			},
 		},
 	}
+	// UserRecommendedMoviesColumns holds the columns for the "user_recommended_movies" table.
+	UserRecommendedMoviesColumns = []*schema.Column{
+		{Name: "user_id", Type: field.TypeUUID},
+		{Name: "wyww_movie_id", Type: field.TypeUUID},
+	}
+	// UserRecommendedMoviesTable holds the schema information for the "user_recommended_movies" table.
+	UserRecommendedMoviesTable = &schema.Table{
+		Name:       "user_recommended_movies",
+		Columns:    UserRecommendedMoviesColumns,
+		PrimaryKey: []*schema.Column{UserRecommendedMoviesColumns[0], UserRecommendedMoviesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_recommended_movies_user_id",
+				Columns:    []*schema.Column{UserRecommendedMoviesColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "user_recommended_movies_wyww_movie_id",
+				Columns:    []*schema.Column{UserRecommendedMoviesColumns[1]},
+				RefColumns: []*schema.Column{WywwMoviesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// UserWatchedMoviesColumns holds the columns for the "user_watched_movies" table.
+	UserWatchedMoviesColumns = []*schema.Column{
+		{Name: "user_id", Type: field.TypeUUID},
+		{Name: "wyww_movie_id", Type: field.TypeUUID},
+	}
+	// UserWatchedMoviesTable holds the schema information for the "user_watched_movies" table.
+	UserWatchedMoviesTable = &schema.Table{
+		Name:       "user_watched_movies",
+		Columns:    UserWatchedMoviesColumns,
+		PrimaryKey: []*schema.Column{UserWatchedMoviesColumns[0], UserWatchedMoviesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_watched_movies_user_id",
+				Columns:    []*schema.Column{UserWatchedMoviesColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "user_watched_movies_wyww_movie_id",
+				Columns:    []*schema.Column{UserWatchedMoviesColumns[1]},
+				RefColumns: []*schema.Column{WywwMoviesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// UserInstalledAppsColumns holds the columns for the "user_installed_apps" table.
+	UserInstalledAppsColumns = []*schema.Column{
+		{Name: "user_id", Type: field.TypeUUID},
+		{Name: "store_app_id", Type: field.TypeUUID},
+	}
+	// UserInstalledAppsTable holds the schema information for the "user_installed_apps" table.
+	UserInstalledAppsTable = &schema.Table{
+		Name:       "user_installed_apps",
+		Columns:    UserInstalledAppsColumns,
+		PrimaryKey: []*schema.Column{UserInstalledAppsColumns[0], UserInstalledAppsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_installed_apps_user_id",
+				Columns:    []*schema.Column{UserInstalledAppsColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "user_installed_apps_store_app_id",
+				Columns:    []*schema.Column{UserInstalledAppsColumns[1]},
+				RefColumns: []*schema.Column{StoreAppsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// WywwMovieGenresColumns holds the columns for the "wyww_movie_genres" table.
 	WywwMovieGenresColumns = []*schema.Column{
 		{Name: "wyww_movie_id", Type: field.TypeUUID},
@@ -124,18 +287,35 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ColorsTable,
+		ImagesTable,
+		SessionsTable,
 		StoreAppsTable,
 		StoreGenresTable,
+		UsersTable,
 		WywwGenresTable,
 		WywwMoviesTable,
 		StoreAppGenresTable,
+		UserRecommendedMoviesTable,
+		UserWatchedMoviesTable,
+		UserInstalledAppsTable,
 		WywwMovieGenresTable,
 	}
 )
 
 func init() {
+	ColorsTable.ForeignKeys[0].RefTable = ImagesTable
+	ImagesTable.ForeignKeys[0].RefTable = StoreAppsTable
+	ImagesTable.ForeignKeys[1].RefTable = WywwMoviesTable
+	SessionsTable.ForeignKeys[0].RefTable = UsersTable
 	StoreAppGenresTable.ForeignKeys[0].RefTable = StoreAppsTable
 	StoreAppGenresTable.ForeignKeys[1].RefTable = StoreGenresTable
+	UserRecommendedMoviesTable.ForeignKeys[0].RefTable = UsersTable
+	UserRecommendedMoviesTable.ForeignKeys[1].RefTable = WywwMoviesTable
+	UserWatchedMoviesTable.ForeignKeys[0].RefTable = UsersTable
+	UserWatchedMoviesTable.ForeignKeys[1].RefTable = WywwMoviesTable
+	UserInstalledAppsTable.ForeignKeys[0].RefTable = UsersTable
+	UserInstalledAppsTable.ForeignKeys[1].RefTable = StoreAppsTable
 	WywwMovieGenresTable.ForeignKeys[0].RefTable = WywwMoviesTable
 	WywwMovieGenresTable.ForeignKeys[1].RefTable = WywwGenresTable
 }

@@ -1,0 +1,47 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "schema" -}}
+
+# Schema
+
+{{ range $node := $.Nodes -}}
+
+## {{ $node.Name }}
+
+**Table:** `{{ $node.Table }}`
+
+### Fields
+
+| Field | Go | TypeScript | Nillable | Unique | Optional | Immutable | Public |
+|---|---|---|:---:|:---:|:---:|:---:|:---:|
+{{- with $field := $node.ID }}
+{{- $public := true }}
+{{ with $access := $field.Annotations.Access }}{{ $public = not $access.Private }}{{ end -}}
+| `{{ $field.Name }}` | `{{ $field.Type.String }}` | `{{ if $field.IsBool }}boolean{{ else if $field.Type.Numeric }}number{{ else if $field.IsEnum }}{{ $field.StructField }}{{ else }}string{{ end }}` | {{ if $field.Nillable }}✓{{ else }}—{{ end }} | {{ if $field.Unique }}✓{{ else }}—{{ end }} | {{ if $field.Optional }}✓{{ else }}—{{ end }} | {{ if $field.Immutable }}✓{{ else }}—{{ end }} | {{ if $public }}✓{{ else }}—{{ end }} |
+{{- end }}
+{{- range $field := $node.Fields }}
+{{- $public := true }}
+{{ with $access := $field.Annotations.Access }}{{ $public = not $access.Private }}{{ end -}}
+| `{{ $field.Name }}` | `{{ $field.Type.String }}` | `{{ if $field.IsBool }}boolean{{ else if $field.Type.Numeric }}number{{ else if $field.IsEnum }}{{ $field.StructField }}{{ else }}string{{ end }}` | {{ if $field.Nillable }}✓{{ else }}—{{ end }} | {{ if $field.Unique }}✓{{ else }}—{{ end }} | {{ if $field.Optional }}✓{{ else }}—{{ end }} | {{ if $field.Immutable }}✓{{ else }}—{{ end }} | {{ if $public }}✓{{ else }}—{{ end }} |
+{{- end }}
+
+### Edges
+
+{{- if $node.Edges }}
+
+| Edge | Target | Go field | Relation | Optional | Unique | Immutable | Inverse |
+|---|---|---|---|:---:|:---:|:---:|:---:|
+{{- range $edge := $node.Edges }}
+| `{{ $edge.Name }}` | `{{ $edge.Type.Name }}` | `{{ $edge.StructField }}` | {{ if $edge.O2O }}O2O{{ else if $edge.O2M }}O2M{{ else if $edge.M2O }}M2O{{ else if $edge.M2M }}M2M{{ else }}—{{ end }} | {{ if $edge.Optional }}✓{{ else }}—{{ end }} | {{ if $edge.Unique }}✓{{ else }}—{{ end }} | {{ if $edge.Immutable }}✓{{ else }}—{{ end }} | {{ if $edge.IsInverse }}✓{{ else }}—{{ end }} |
+{{- end }}
+
+{{- else }}
+
+_No edges._
+
+{{- end }}
+
+---
+
+{{ end -}}
+{{ end }}

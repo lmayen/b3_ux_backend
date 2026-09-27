@@ -1,0 +1,61 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+{{ define "findMany" }}
+package api
+
+import (
+	"b3_ux_backend/internal/db"
+	"b3_ux_backend/internal/entities"
+	"b3_ux_backend/internal/server/core"
+
+	"github.com/gin-gonic/gin"
+	"github.com/olekukonko/errors"
+)
+
+
+type findManyParameters struct {
+	Filters    []entities.FilterItem       `json:"filters"`
+	Sorting    *entities.SortOptions       `json:"sorting,omitempty"`
+	Pagination *entities.PaginationOptions `json:"pagination,omitempty"`
+}
+
+{{ range $node := $.Nodes }}
+func FindMany{{ $node.Name }}(ctx *gin.Context) {
+	var params findManyParameters
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		core.HandleError(ctx, 400, "could not bind parameters", errors.Wrapf(err, "FindMany{{ $node.Name }} ERR: could not bind parameters"))
+		return
+	}
+
+	query := db.Client.{{ $node.Name }}.Query()
+
+	if params.Filters != nil {
+		err := query.ApplyFilterOptions(params.Filters)
+		if err != nil {
+		    core.HandleError(ctx, 400, "could not apply filters to the database query.", errors.Wrapf(err, "FindMany{{ $node.Name }} ERR: could not apply filters to the database query"))
+			return
+		}
+	}
+
+	if params.Pagination != nil {
+		query.ApplyPaginationOptions(params.Pagination)
+	}
+
+	if params.Sorting != nil {
+		query.ApplySortingOptions(params.Sorting)
+	}
+
+	queryResult, err := query.All(ctx)
+	if err != nil {
+		core.HandleError(ctx, 500, "could not query the {{ $node.Name }} table in the database", errors.Wrapf(err, "FindMany{{ $node.Name }} ERR: could not query the {{ $node.Name }} table in the databas"))
+		return
+	}
+
+	var dataResult []*entities.{{ $node.Name }}Data
+	for _, record := range queryResult {
+		dataResult = append(dataResult, record.ToData())
+	}
+
+	ctx.JSON(200, dataResult)
+}
+{{ end }}
+{{ end }}

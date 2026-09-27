@@ -21,7 +21,7 @@ func InitServer(cfg *config.Config, shutdownCh chan<- struct{}) (*gin.Engine, *h
 	}
 
 	// Infrastructure routes
-	routes.InitRoutes(engine)
+	InitRoutes(engine)
 
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port),

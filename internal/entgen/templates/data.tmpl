@@ -1,0 +1,57 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "utils_data" }}
+
+{{ template "header" $ }}
+
+{{ range $node := $.Nodes }}
+type {{ $node.Name }}Data struct {
+    {{- if and $node.ID $node.ID.IsUUID  }}ID  uuid.UUID  `json:"id"`{{ end }}
+
+    {{- range $field := $node.Fields }}
+    {{- $public := true }}
+    {{- with $access := $field.Annotations.Access }}{{ $public = not $access.Private }}{{ end }}
+    {{- if $public }}
+    {{ if $field.Nillable }}{{ $field.StructField }}  *{{ $field.Type }}  `json:"{{ $field.Name }}"`{{ end }}
+    {{ if not $field.Nillable }}{{ $field.StructField }}  {{ $field.Type }}  `json:"{{ $field.Name }}"`{{ end }}
+    {{ end -}}
+    {{ end -}}
+
+    {{- range $edge := $node.Edges }}
+    {{ if not $edge.IsInverse }}{{ if or $edge.O2O $edge.M2O }}{{ $edge.StructField }}  *{{ $edge.Type.Name }}Data `json:"{{ $edge.Name }}"`{{ end }}{{ end }}
+    {{ if not $edge.IsInverse }}{{ if or $edge.O2M $edge.M2M }}{{ $edge.StructField }}  []{{ $edge.Type.Name }}Data `json:"{{ $edge.Name }}"`{{ end }}{{ end }}
+    {{ end -}}
+}
+
+func (n *{{ $node.Name }}) ToData() *{{ $node.Name }}Data {
+    result := {{ $node.Name }}Data{
+        {{ if and $node.ID $node.ID.IsUUID }}ID:  n.ID,{{ end }}
+        {{ range $field := $node.Fields }}
+        {{- $public := true }}
+        {{- with $access := $field.Annotations.Access }}{{ $public = not $access.Private }}{{ end }}
+        {{- if $public }}
+        {{ $field.StructField }}:  n.{{ $field.StructField }},
+        {{ end -}}
+        {{ end -}}
+    }
+
+    {{ range $edge := $node.Edges }}
+    {{ if not $edge.IsInverse }}
+    if n.Edges.{{ $edge.StructField }} != nil {
+        {{ if or $edge.O2O $edge.M2O }}
+        result.{{ $edge.StructField }} = n.Edges.{{ $edge.StructField }}.ToData()
+        {{ end }}
+        {{ if or $edge.O2M $edge.M2M }}
+        for _, i := range n.Edges.{{ $edge.StructField }} {
+            result.{{ $edge.StructField }} = append(result.{{ $edge.StructField }}, *i.ToData())
+        }
+        {{ end -}}
+    }
+    {{ end }}
+    {{ end }}
+
+    return &result
+}
+{{ end }}
+
+{{ end }}

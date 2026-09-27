@@ -70,16 +70,6 @@ func Description(v string) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldEQ(FieldDescription, v))
 }
 
-// PosterPath applies equality check predicate on the "poster_path" field. It's identical to PosterPathEQ.
-func PosterPath(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEQ(FieldPosterPath, v))
-}
-
-// BannerPath applies equality check predicate on the "banner_path" field. It's identical to BannerPathEQ.
-func BannerPath(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEQ(FieldBannerPath, v))
-}
-
 // ReleasedYear applies equality check predicate on the "released_year" field. It's identical to ReleasedYearEQ.
 func ReleasedYear(v int32) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldEQ(FieldReleasedYear, v))
@@ -310,136 +300,6 @@ func DescriptionContainsFold(v string) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldContainsFold(FieldDescription, v))
 }
 
-// PosterPathEQ applies the EQ predicate on the "poster_path" field.
-func PosterPathEQ(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEQ(FieldPosterPath, v))
-}
-
-// PosterPathNEQ applies the NEQ predicate on the "poster_path" field.
-func PosterPathNEQ(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldNEQ(FieldPosterPath, v))
-}
-
-// PosterPathIn applies the In predicate on the "poster_path" field.
-func PosterPathIn(vs ...string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldIn(FieldPosterPath, vs...))
-}
-
-// PosterPathNotIn applies the NotIn predicate on the "poster_path" field.
-func PosterPathNotIn(vs ...string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldNotIn(FieldPosterPath, vs...))
-}
-
-// PosterPathGT applies the GT predicate on the "poster_path" field.
-func PosterPathGT(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldGT(FieldPosterPath, v))
-}
-
-// PosterPathGTE applies the GTE predicate on the "poster_path" field.
-func PosterPathGTE(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldGTE(FieldPosterPath, v))
-}
-
-// PosterPathLT applies the LT predicate on the "poster_path" field.
-func PosterPathLT(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldLT(FieldPosterPath, v))
-}
-
-// PosterPathLTE applies the LTE predicate on the "poster_path" field.
-func PosterPathLTE(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldLTE(FieldPosterPath, v))
-}
-
-// PosterPathContains applies the Contains predicate on the "poster_path" field.
-func PosterPathContains(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldContains(FieldPosterPath, v))
-}
-
-// PosterPathHasPrefix applies the HasPrefix predicate on the "poster_path" field.
-func PosterPathHasPrefix(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldHasPrefix(FieldPosterPath, v))
-}
-
-// PosterPathHasSuffix applies the HasSuffix predicate on the "poster_path" field.
-func PosterPathHasSuffix(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldHasSuffix(FieldPosterPath, v))
-}
-
-// PosterPathEqualFold applies the EqualFold predicate on the "poster_path" field.
-func PosterPathEqualFold(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEqualFold(FieldPosterPath, v))
-}
-
-// PosterPathContainsFold applies the ContainsFold predicate on the "poster_path" field.
-func PosterPathContainsFold(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldContainsFold(FieldPosterPath, v))
-}
-
-// BannerPathEQ applies the EQ predicate on the "banner_path" field.
-func BannerPathEQ(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEQ(FieldBannerPath, v))
-}
-
-// BannerPathNEQ applies the NEQ predicate on the "banner_path" field.
-func BannerPathNEQ(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldNEQ(FieldBannerPath, v))
-}
-
-// BannerPathIn applies the In predicate on the "banner_path" field.
-func BannerPathIn(vs ...string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldIn(FieldBannerPath, vs...))
-}
-
-// BannerPathNotIn applies the NotIn predicate on the "banner_path" field.
-func BannerPathNotIn(vs ...string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldNotIn(FieldBannerPath, vs...))
-}
-
-// BannerPathGT applies the GT predicate on the "banner_path" field.
-func BannerPathGT(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldGT(FieldBannerPath, v))
-}
-
-// BannerPathGTE applies the GTE predicate on the "banner_path" field.
-func BannerPathGTE(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldGTE(FieldBannerPath, v))
-}
-
-// BannerPathLT applies the LT predicate on the "banner_path" field.
-func BannerPathLT(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldLT(FieldBannerPath, v))
-}
-
-// BannerPathLTE applies the LTE predicate on the "banner_path" field.
-func BannerPathLTE(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldLTE(FieldBannerPath, v))
-}
-
-// BannerPathContains applies the Contains predicate on the "banner_path" field.
-func BannerPathContains(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldContains(FieldBannerPath, v))
-}
-
-// BannerPathHasPrefix applies the HasPrefix predicate on the "banner_path" field.
-func BannerPathHasPrefix(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldHasPrefix(FieldBannerPath, v))
-}
-
-// BannerPathHasSuffix applies the HasSuffix predicate on the "banner_path" field.
-func BannerPathHasSuffix(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldHasSuffix(FieldBannerPath, v))
-}
-
-// BannerPathEqualFold applies the EqualFold predicate on the "banner_path" field.
-func BannerPathEqualFold(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldEqualFold(FieldBannerPath, v))
-}
-
-// BannerPathContainsFold applies the ContainsFold predicate on the "banner_path" field.
-func BannerPathContainsFold(v string) predicate.WywwMovie {
-	return predicate.WywwMovie(sql.FieldContainsFold(FieldBannerPath, v))
-}
-
 // ReleasedYearEQ applies the EQ predicate on the "released_year" field.
 func ReleasedYearEQ(v int32) predicate.WywwMovie {
 	return predicate.WywwMovie(sql.FieldEQ(FieldReleasedYear, v))
@@ -575,6 +435,75 @@ func HasGenres() predicate.WywwMovie {
 func HasGenresWith(preds ...predicate.WywwGenre) predicate.WywwMovie {
 	return predicate.WywwMovie(func(s *sql.Selector) {
 		step := newGenresStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasImages applies the HasEdge predicate on the "images" edge.
+func HasImages() predicate.WywwMovie {
+	return predicate.WywwMovie(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ImagesTable, ImagesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasImagesWith applies the HasEdge predicate on the "images" edge with a given conditions (other predicates).
+func HasImagesWith(preds ...predicate.Image) predicate.WywwMovie {
+	return predicate.WywwMovie(func(s *sql.Selector) {
+		step := newImagesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasUserRecommendations applies the HasEdge predicate on the "user_recommendations" edge.
+func HasUserRecommendations() predicate.WywwMovie {
+	return predicate.WywwMovie(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, UserRecommendationsTable, UserRecommendationsPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUserRecommendationsWith applies the HasEdge predicate on the "user_recommendations" edge with a given conditions (other predicates).
+func HasUserRecommendationsWith(preds ...predicate.User) predicate.WywwMovie {
+	return predicate.WywwMovie(func(s *sql.Selector) {
+		step := newUserRecommendationsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasUserWatchlist applies the HasEdge predicate on the "user_watchlist" edge.
+func HasUserWatchlist() predicate.WywwMovie {
+	return predicate.WywwMovie(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, UserWatchlistTable, UserWatchlistPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUserWatchlistWith applies the HasEdge predicate on the "user_watchlist" edge with a given conditions (other predicates).
+func HasUserWatchlistWith(preds ...predicate.User) predicate.WywwMovie {
+	return predicate.WywwMovie(func(s *sql.Selector) {
+		step := newUserWatchlistStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
